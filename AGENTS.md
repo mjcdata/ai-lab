@@ -31,3 +31,13 @@ AI-Lab/
 ## Initial setup scope
 
 When setting up the lab, create only the structure above and concise README and AGENTS documentation explaining these principles. Do not create example projects or additional infrastructure unless explicitly requested.
+
+## Development workflow
+
+- Use ChatGPT Voice for collaborative planning and requirements decisions; record approved decisions in repository documentation.
+- Treat GitHub as the shared source of truth for plans, code, and progress. Read the latest relevant commits and project work plan before implementing changes.
+- Prefer cloud Codex for routine implementation, small-scale tests, and committing completed code to GitHub. Use local Codex when direct access to the MacBook, local datasets, or runtime troubleshooting is needed.
+- Keep large dataset downloads, substantial data processing, and model training on the MacBook unless the user explicitly approves another environment. The user initiates these large local runs.
+- Implement clearly approved tasks autonomously, but request user approval for material changes to scope, data sources, methodology, architecture, costs, deployment, or other consequential decisions.
+- If automated GitHub commit monitoring is configured, inspect changes for approved, incomplete tasks before acting; avoid duplicate work and self-triggering loops. These instructions alone do not enable monitoring or launch Codex.
+- Follow project-specific work plans for deliverables; keep lab-wide operating rules here.
