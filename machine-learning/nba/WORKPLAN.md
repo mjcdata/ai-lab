@@ -13,6 +13,7 @@ Build a public React + Python application that returns the **top five historical
 ## Approved implementation tasks
 
 - [ ] **SETUP-1** [CODEX-READY] Create a minimal Python project in `machine-learning/nba/` using `uv`: add `pyproject.toml`, a small importable package, and one lightweight smoke test. Keep dependencies minimal; document commands to install and run tests. Do not fetch data, research sources, train models, or change the planned similarity methodology.
+  - Implementation added: `pyproject.toml`, `src/nba_player_similarity/`, a standard-library smoke test, and setup/test commands in `README.md`. Source-tree smoke test passed with `PYTHONPATH=src python -m unittest discover -s tests -v`; TOML metadata and package layout checks passed. Completion awaits `uv sync` and `uv run python -m unittest discover -s tests -v`: `uv` is unavailable in the implementation environment, and installation was blocked by external package-access DNS failure.
 
 ## Work breakdown structure
 
