@@ -1,0 +1,72 @@
+name: NBA Codex work-plan automation
+
+on:
+  workflow_dispatch:
+  # Enable only after a successful manual test and review:
+  # schedule:
+  #   - cron: '17 * * * *'
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: nba-codex-automation
+  cancel-in-progress: false
+
+jobs:
+  implement:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Check for an existing automation PR
+        id: guard
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const prs = await github.paginate(github.rest.pulls.list, {
+              owner, repo, state: 'open', per_page: 100
+            });
+            const pending = prs.some(pr => pr.head.ref.startsWith('codex/nba-'));
+            core.setOutput('proceed', pending ? 'false' : 'true');
+            if (pending) core.info('Existing NBA Codex PR: skip this run.');
+
+      - name: Checkout repository
+        if: steps.guard.outputs.proceed == 'true'
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Run Codex on one approved NBA task
+        if: steps.guard.outputs.proceed == 'true'
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          permission-profile: ':workspace'
+          prompt: |
+            Read AGENTS.md, WORK_PLAN.md, and machine-learning/nba/WORKPLAN.md.
+            Work on at most ONE clearly approved, incomplete WBS task in the NBA plan.
+            Current permitted phase is research tasks 1.1-1.4; do not perform bulk
+            ingestion, training, paid API calls, deployment, or other gated work.
+            If approval is required or no suitable task remains, do not modify files.
+            Do not change GitHub Actions workflows, AGENTS.md, or approval rules.
+            Keep changes limited to the NBA project and its work-plan status.
+            Do not mark tasks complete without evidence and relevant checks.
+            Summarize what was done and what needs user approval.
+            Never push, merge, or create a PR yourself.
+
+      - name: Create draft PR if files changed
+        if: steps.guard.outputs.proceed == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: codex/nba-hourly
+          delete-branch: true
+          title: 'NBA: Codex proposed work-plan progress'
+          body: |
+            Automated proposal for review. No changes are merged automatically.
+            Confirm that the work respects all NBA decision gates before merging.
+          draft: true
+          add-paths: |
+            machine-learning/nba/**
