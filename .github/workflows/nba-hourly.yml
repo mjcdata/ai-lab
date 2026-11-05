@@ -98,8 +98,5 @@ jobs:
             Review code, validation evidence, and approval gates before merging.
             This workflow does not merge PRs.
           draft: true
-          add-paths: |
-            WORK_PLAN.md
-            machine-learning/**
-            generative-ai/**
-            modules/**
+          # No add-paths restriction: git stages only files actually changed by Codex.
+          # The Codex prompt prohibits editing workflow and approval files.
