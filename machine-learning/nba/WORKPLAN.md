@@ -1,7 +1,7 @@
 # NBA Player Similarity — Work Breakdown Structure (WBS)
 
 **Project:** AI Lab / Machine Learning / NBA  
-**Status:** Source approved; ingestion pilot in review  
+**Status:** Source approved; three-season pilot ingested; historical quality validation pending  
 **Execution:** Codex implements routine work autonomously; user approves major decisions.
 
 ## Goal and scope
@@ -22,7 +22,15 @@ Build a public React + Python application that returns the **top five historical
 - Missing data observed: 1946-47 REB 6508, AST 6377, STL/BLK/TOV 6508; 1951-52 REB 5784, AST 5257, STL/BLK/TOV 6086; 1965-66 AST 945, REB 518, STL/BLK/TOV 6855; 1973-74 REB 1044, AST 1133, STL 9682, BLK 9240, TOV 13379; 1977-78 REB 76, AST 314, STL 5813, BLK 5019, TOV 8848; 1985-86 AST 5, REB/STL/BLK/TOV 6. MIN and PTS had no nulls in these samples, but early minutes still require independent validation.
 - Risks: incomplete historical game logs, cloud IP blocking, throttling, uncertain early minutes, upstream changes. Preserve missing values; validate completeness, duplicates, minutes plausibility, and cross-check independent totals before modeling.
 - Alternative sources remain fallbacks. Public redistribution/licensing requires separate review before deployment.
-- **[CODEX-READY] DATA-1 — Approved ingestion pilot:** Build offline-testable Python CLI, season cache, structural and missingness reports. Pilot seasons: 1946-47, 1977-78, 2024-25. No bulk download or cloud live API requests; user initiates MacBook retrieval after review.
+- **DATA-1 pilot implemented and locally executed:** CLI, per-season raw JSON cache, structural and missingness reports. Pilot seasons: 1946-47, 1977-78, 2024-25. The user reported successful runs; independent historical completeness and test-suite verification are still pending.
+
+## Local ingestion pilot results — 2026-11-05
+
+- 1946-47: 6,508 rows; missing MIN 0%, PTS 0%, REB 100%, AST 97.99%, STL 100%, BLK 100%, TOV 100%.
+- 1977-78: 17,768 rows; missing MIN 0%, PTS 0%, REB 0.43%, AST 1.77%, STL 32.72%, BLK 28.25%, TOV 49.8%.
+- 2024-25: 26,306 rows; missing MIN, PTS, REB, AST, STL, BLK, TOV 0%.
+- Total: 50,582 player-game rows retrieved and cached locally. This is **not** confirmation of historical completeness or correctness. The 1946-47 raw data includes two conflicting John Murphy team records (PHW and NYK) for game 0024600076; retain raw records and exclude unresolved player-game conflicts from derived aggregates.
+- No model training or bulk historical download was performed. The user has not supplied an offline unit-test result for the latest changes.
 
 ## Work breakdown structure
 
@@ -32,8 +40,8 @@ Build a public React + Python application that returns the **top five historical
 - [x] **1.3** Assess coverage gaps, API reliability, throttling, permitted usage, costs, and reproducibility.
 - [x] **1.4** Write a concise source comparison and recommendation, with evidence from sample retrievals.
 - [x] **1.5 DECISION GATE:** Present source recommendation and coverage limitations; obtain user approval **before bulk download**.
-- [ ] **1.6** Implement reproducible, resumable ingestion with caching and raw-data validation. Pilot code proposed; pending local verification.
-- [ ] **1.7** Store historical game logs locally; document data lineage and update procedure.
+- [ ] **1.6** Implement reproducible, resumable ingestion with caching and raw-data validation. Three-season pilot ran locally; full-history acquisition and independent coverage validation remain pending.
+- [ ] **1.7** [CODEX-READY] Document the local pilot's data lineage, cache/re-run procedure, duplicate-conflict handling and historical quality review checklist. Add offline tests for report consistency and unresolved duplicate exclusion from future derived datasets. Do not fetch more data, change the similarity methodology, or mark full historical acquisition complete.
 
 **Deliverable:** Approved data source, reproducible local historical game-level dataset.
 
