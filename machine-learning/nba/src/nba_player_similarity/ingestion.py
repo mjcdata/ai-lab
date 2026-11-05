@@ -61,16 +61,24 @@ def validate_rows(rows: list[dict], season: str) -> dict:
     )
     keys = [(str(row.get("PLAYER_ID")), str(row.get("GAME_ID"))) for row in rows]
     duplicates = sum(n - 1 for n in Counter(keys).values() if n > 1)
+    conflict_keys = {key for key, n in Counter(keys).items() if n > 1}
+    conflict_rows = [
+        {"PLAYER_ID": row.get("PLAYER_ID"), "GAME_ID": row.get("GAME_ID"),
+         "GAME_DATE": row.get("GAME_DATE"), "TEAM_ABBREVIATION": row.get("TEAM_ABBREVIATION"),
+         "MIN": row.get("MIN"), "PTS": row.get("PTS")}
+        for row in rows
+        if (str(row.get("PLAYER_ID")), str(row.get("GAME_ID"))) in conflict_keys
+    ]
     return {
         "season": season, "rows": len(rows), "columns": sorted(columns),
         "missing_counts": missing, "missing_percent": {
             key: round(100 * count / len(rows), 2) for key, count in missing.items()
         },
-        "missing_identifiers": invalid_ids, "duplicate_player_game_rows": duplicates,
+        "missing_identifiers": invalid_ids, "duplicate_player_game_rows": duplicates, "duplicate_conflict_rows": conflict_rows,
         "invalid_minutes": invalid_minutes, "invalid_points": invalid_points,
         "warnings": [
             label for label, count in (
-                ("missing identifiers", invalid_ids), ("duplicate player/game rows", duplicates),
+                ("missing identifiers", invalid_ids),
                 ("implausible minutes", invalid_minutes), ("invalid points", invalid_points)
             ) if count
         ],

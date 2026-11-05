@@ -47,6 +47,16 @@ class IngestionTests(unittest.TestCase):
             self.assertIsNone(json.loads((root / "raw" / "1946-47.json").read_text())[0]["STL"])
             self.assertTrue((root / "reports" / "1946-47.json").exists())
 
+    def test_duplicate_conflict_preserved_in_raw_cache(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            rows = [row(player=77671, game="0024600076", TEAM_ABBREVIATION="PHW"),
+                    row(player=77671, game="0024600076", TEAM_ABBREVIATION="NYK")]
+            report = ingest("1946-47", root, fetcher=lambda _: rows)
+            self.assertEqual(report["duplicate_player_game_rows"], 1)
+            self.assertEqual(len(report["duplicate_conflict_rows"]), 2)
+            self.assertEqual(len(json.loads((root / "raw" / "1946-47.json").read_text())), 2)
+
     def test_bad_data_is_not_cached(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
