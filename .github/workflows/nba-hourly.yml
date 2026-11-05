@@ -46,20 +46,16 @@ jobs:
           python - <<'PY'
           from pathlib import Path
           import os, re
-          plan = Path('WORK_PLAN.md').read_text()
+          # Only explicitly approved implementation tasks are eligible.
+          # Example: - [ ] **2.1** [CODEX-READY] Implement the parser.
           candidates = [Path('WORK_PLAN.md')]
           candidates += sorted(Path('.').glob('**/WORKPLAN.md'))
-          # Cheap preflight only. Codex remains responsible for approval decisions.
-          actionable = False
-          for p in candidates:
-              if '.github' in p.parts:
-                  continue
-              for line in p.read_text().splitlines():
-                  if re.search(r'^\s*- \[ \]', line) and not re.search(r'DECISION GATE|approval required', line, re.I):
-                      actionable = True
-                      break
-              if actionable:
-                  break
+          actionable = any(
+              re.search(r'^\\s*- \\[ \\].*\\[CODEX-READY\\]', line, re.I)
+              and not re.search(r'DECISION GATE|approval required', line, re.I)
+              for p in candidates if '.github' not in p.parts
+              for line in p.read_text().splitlines()
+          )
           with open(os.environ['GITHUB_OUTPUT'], 'a') as out:
               out.write(f"run={'true' if actionable else 'false'}\n")
           print('Eligible unchecked task found' if actionable else 'No unchecked non-gate task; skip Codex')
@@ -74,7 +70,7 @@ jobs:
           prompt: |
             Read AGENTS.md, WORK_PLAN.md, relevant project WORKPLAN.md files,
             and recent commits. Follow the active project and priorities in WORK_PLAN.md.
-            Select and implement at most ONE next approved, incomplete task.
+            Select and implement at most ONE unchecked task explicitly tagged\n            [CODEX-READY] in the active project's work plan. If none exists,\n            make no changes. A tag is required even if other tasks are unchecked.\n            Do not skip ahead past unmet dependencies or decision gates.\n            Research, source evaluation, comparisons, recommendations, and\n            data acquisition are handled by the user with ChatGPT, not Codex.\n            Never perform research tasks or edit a work plan merely to log\n            blocked research. Only implement approved code, tests, or technical\n            documentation directly supporting that implementation.
             If the next task is an approval gate or requires a consequential decision,
             do not bypass it; make no changes and explain what approval is needed.
             Never bulk-download datasets, run expensive training, incur additional
