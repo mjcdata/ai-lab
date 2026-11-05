@@ -1,29 +1,38 @@
 # NBA Player Similarity — Work Breakdown Structure (WBS)
 
 **Project:** AI Lab / Machine Learning / NBA  
-**Status:** Planning — Phase 1 research pending  
+**Status:** Source approved; ingestion pilot in review  
 **Execution:** Codex implements routine work autonomously; user approves major decisions.
 
 ## Goal and scope
 
 Build a public React + Python application that returns the **top five historical NBA player comparisons** for a selected player. Compare players at approximately the same **cumulative regular-season career minutes**, using the latest available career checkpoint by default. Include NBA history back to 1946–47 **where reliable game-level data permits**.
 
-**Version 1:** ±10% cumulative-minutes matching (initial proposal); six features (points, assists, rebounds, steals, blocks, turnovers); per-36 rates by default, with per-game option; standardized equal-weight nearest-neighbor baseline; interpretable results. Handle missing historical statistics explicitly, never as zeros. Assess whether incomplete eras can be compared fairly.
+**Version 1:** ±10% cumulative-minutes matching (initial proposal); six features (points, assists, rebounds, steals, blocks, turnovers) when jointly available, otherwise era-aware comparisons; per-36 rates by default, with per-game option; standardized equal-weight nearest-neighbor baseline; interpretable results. Handle missing historical statistics explicitly, never as zeros. Assess whether incomplete eras can be compared fairly.
 
 ## Approved implementation tasks
 
 - [x] **SETUP-1** Create a minimal Python project in `machine-learning/nba/` using `uv`: add `pyproject.toml`, a small importable package, and one lightweight smoke test. Keep dependencies minimal; document commands to install and run tests. Do not fetch data, research sources, train models, or change the planned similarity methodology.
   - Implementation added: `pyproject.toml`, `src/nba_player_similarity/`, a standard-library smoke test, and setup/test commands in `README.md`. Source-tree smoke test passed with `PYTHONPATH=src python -m unittest discover -s tests -v`; TOML metadata and package layout checks passed. Completed validation in GitHub Codespaces (2026-11-05): `uv sync` successfully built and installed `nba-player-similarity==0.1.0`; `uv run python -m unittest discover -s tests -v` passed (1 test, 0 failures).
 
+## Source research decision — approved 2026-11-05
+
+- Primary source: `swar/nba_api` `LeagueGameLog` regular-season player logs; era-aware comparisons approved.
+- MacBook retrievals succeeded: 1946-47 (6,508 rows), 1951-52 (6,086), 1965-66 (6,855), 1973-74 (13,380), 1977-78 (17,768), 1985-86 (19,387), 2024-25 (26,306). Codespaces requests timed out; live acquisition runs locally.
+- Missing data observed: 1946-47 REB 6508, AST 6377, STL/BLK/TOV 6508; 1951-52 REB 5784, AST 5257, STL/BLK/TOV 6086; 1965-66 AST 945, REB 518, STL/BLK/TOV 6855; 1973-74 REB 1044, AST 1133, STL 9682, BLK 9240, TOV 13379; 1977-78 REB 76, AST 314, STL 5813, BLK 5019, TOV 8848; 1985-86 AST 5, REB/STL/BLK/TOV 6. MIN and PTS had no nulls in these samples, but early minutes still require independent validation.
+- Risks: incomplete historical game logs, cloud IP blocking, throttling, uncertain early minutes, upstream changes. Preserve missing values; validate completeness, duplicates, minutes plausibility, and cross-check independent totals before modeling.
+- Alternative sources remain fallbacks. Public redistribution/licensing requires separate review before deployment.
+- **[CODEX-READY] DATA-1 — Approved ingestion pilot:** Build offline-testable Python CLI, season cache, structural and missingness reports. Pilot seasons: 1946-47, 1977-78, 2024-25. No bulk download or cloud live API requests; user initiates MacBook retrieval after review.
+
 ## Work breakdown structure
 
 ### 1.0 Historical data acquisition
-- [ ] **1.1** Evaluate `nba_api` (preferred candidate) and alternative sources for historical game logs.
-- [ ] **1.2** Test sample seasons from early, middle, and modern NBA history; verify minutes, games, all six stats, and player identifiers.
-- [ ] **1.3** Assess coverage gaps, API reliability, throttling, permitted usage, costs, and reproducibility.
-- [ ] **1.4** Write a concise source comparison and recommendation, with evidence from sample retrievals.
-- [ ] **1.5 DECISION GATE:** Present source recommendation and coverage limitations; obtain user approval **before bulk download**.
-- [ ] **1.6** Implement reproducible, resumable ingestion with caching and raw-data validation.
+- [x] **1.1** Evaluate `nba_api` (preferred candidate) and alternative sources for historical game logs.
+- [x] **1.2** Test sample seasons from early, middle, and modern NBA history; verify minutes, games, all six stats, and player identifiers.
+- [x] **1.3** Assess coverage gaps, API reliability, throttling, permitted usage, costs, and reproducibility.
+- [x] **1.4** Write a concise source comparison and recommendation, with evidence from sample retrievals.
+- [x] **1.5 DECISION GATE:** Present source recommendation and coverage limitations; obtain user approval **before bulk download**.
+- [ ] **1.6** Implement reproducible, resumable ingestion with caching and raw-data validation. Pilot code proposed; pending local verification.
 - [ ] **1.7** Store historical game logs locally; document data lineage and update procedure.
 
 **Deliverable:** Approved data source, reproducible local historical game-level dataset.
