@@ -10,6 +10,7 @@ AI Lab/
 ├── generative-ai/
 ├── modules/
 ├── README.md
+├── WORK_PLAN.md
 └── AGENTS.md
 ```
 
@@ -17,6 +18,7 @@ AI Lab/
 - **generative-ai/** — LLMs, RAG, agents, MCP, local models served through tools such as LM Studio, and related experiments.
 - **modules/** — Reusable Python capabilities extracted from actual projects when there is a clear reason to share them.
 - **AGENTS.md** — Guidance for coding agents working in the lab.
+- **WORK_PLAN.md** — Lab-wide progress and a link to the active project plan.
 
 ## How to work
 
@@ -28,4 +30,4 @@ Prefer simple, replaceable components. Avoid tightly coupling projects, creating
 
 ## Getting started
 
-Choose one small project with a concrete outcome and place it in the appropriate area. Let its requirements drive the first environment, dependencies, and engineering practices. The initial lab contains no example projects or additional infrastructure.
+Start with [the lab work plan](WORK_PLAN.md). The active project is [NBA player similarity](machine-learning/nba/WORKPLAN.md). Let project requirements drive environments, dependencies, and engineering practices.
