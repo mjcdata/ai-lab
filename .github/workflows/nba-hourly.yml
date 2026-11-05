@@ -51,7 +51,7 @@ jobs:
           candidates = [Path('WORK_PLAN.md')]
           candidates += sorted(Path('.').glob('**/WORKPLAN.md'))
           actionable = any(
-              re.search(r'^\\s*- \\[ \\].*\\[CODEX-READY\\]', line, re.I)
+              re.search(r'^\s*- \[ \].*\[CODEX-READY\]', line, re.I)
               and not re.search(r'DECISION GATE|approval required', line, re.I)
               for p in candidates if '.github' not in p.parts
               for line in p.read_text().splitlines()
