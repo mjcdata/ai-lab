@@ -11,7 +11,7 @@
 
 The active project is **NBA player similarity**. Its scope, deliverables, progress, and decision gates live in [the NBA work plan](machine-learning/nba/WORKPLAN.md). Update that plan rather than duplicating its task list here.
 
-The next project work is WBS **1.1–1.4**: evaluate historical data sources, retrieve small representative samples, assess coverage and reliability, and present a recommendation. Bulk downloads require the approval recorded at gate **1.5**. Large downloads, substantial processing, and training run locally and are initiated by the user.
+Historical source selection (WBS 1.1–1.5) is approved. The local three-season ingestion pilot completed on 2026-11-05; next is WBS **1.6–1.7**, validate the cached records and document historical completeness and lineage before preparing model features. Large downloads, substantial processing, and training run locally and are initiated by the user. Codex automation operates on explicitly tagged unchecked tasks only.
 
 ## Coordination
 
