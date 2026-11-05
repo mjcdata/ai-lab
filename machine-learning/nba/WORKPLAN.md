@@ -10,7 +10,11 @@ Build a public React + Python application that returns the **top five historical
 
 **Version 1:** ±10% cumulative-minutes matching (initial proposal); six features (points, assists, rebounds, steals, blocks, turnovers); per-36 rates by default, with per-game option; standardized equal-weight nearest-neighbor baseline; interpretable results. Handle missing historical statistics explicitly, never as zeros. Assess whether incomplete eras can be compared fairly.
 
-## Approved implementation tasks\n\n- [ ] **SETUP-1** [CODEX-READY] Create a minimal Python project in `machine-learning/nba/` using `uv`: add `pyproject.toml`, a small importable package, and one lightweight smoke test. Keep dependencies minimal; document commands to install and run tests. Do not fetch data, research sources, train models, or change the planned similarity methodology.\n\n## Work breakdown structure
+## Approved implementation tasks
+
+- [ ] **SETUP-1** [CODEX-READY] Create a minimal Python project in `machine-learning/nba/` using `uv`: add `pyproject.toml`, a small importable package, and one lightweight smoke test. Keep dependencies minimal; document commands to install and run tests. Do not fetch data, research sources, train models, or change the planned similarity methodology.
+
+## Work breakdown structure
 
 ### 1.0 Historical data acquisition
 - [ ] **1.1** Evaluate `nba_api` (preferred candidate) and alternative sources for historical game logs.
