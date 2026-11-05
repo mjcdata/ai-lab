@@ -12,8 +12,8 @@ Build a public React + Python application that returns the **top five historical
 
 ## Approved implementation tasks
 
-- [ ] **SETUP-1** [CODEX-READY] Create a minimal Python project in `machine-learning/nba/` using `uv`: add `pyproject.toml`, a small importable package, and one lightweight smoke test. Keep dependencies minimal; document commands to install and run tests. Do not fetch data, research sources, train models, or change the planned similarity methodology.
-  - Implementation added: `pyproject.toml`, `src/nba_player_similarity/`, a standard-library smoke test, and setup/test commands in `README.md`. Source-tree smoke test passed with `PYTHONPATH=src python -m unittest discover -s tests -v`; TOML metadata and package layout checks passed. Completion awaits `uv sync` and `uv run python -m unittest discover -s tests -v`: `uv` is unavailable in the implementation environment, and installation was blocked by external package-access DNS failure.
+- [x] **SETUP-1** Create a minimal Python project in `machine-learning/nba/` using `uv`: add `pyproject.toml`, a small importable package, and one lightweight smoke test. Keep dependencies minimal; document commands to install and run tests. Do not fetch data, research sources, train models, or change the planned similarity methodology.
+  - Implementation added: `pyproject.toml`, `src/nba_player_similarity/`, a standard-library smoke test, and setup/test commands in `README.md`. Source-tree smoke test passed with `PYTHONPATH=src python -m unittest discover -s tests -v`; TOML metadata and package layout checks passed. Completed validation in GitHub Codespaces (2026-11-05): `uv sync` successfully built and installed `nba-player-similarity==0.1.0`; `uv run python -m unittest discover -s tests -v` passed (1 test, 0 failures).
 
 ## Work breakdown structure
 
