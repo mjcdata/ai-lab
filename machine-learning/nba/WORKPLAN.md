@@ -23,6 +23,16 @@ Build a public React + Python application that returns the **top five historical
 
 **Deliverable:** Approved data source, reproducible local historical game-level dataset.
 
+#### WBS 1.1 progress — 2026-11-05
+
+Attempted to access the `nba_api` documentation and candidate source sites using Python's `urllib.request`:
+
+- https://raw.githubusercontent.com/swar/nba_api/master/README.md
+- https://www.nba.com/stats/
+- https://www.basketball-reference.com/
+
+All three requests failed with `URLError: <urlopen error [Errno -3] Temporary failure in name resolution>`. External access is blocked in this environment; no source documentation or game logs were retrieved. WBS 1.1 remains incomplete, with no verified coverage, usage, cost, or reliability findings and no source recommendation. Resume source evaluation when network access is available; the bulk-download approval gate at 1.5 remains pending.
+
 ### 2.0 Data preparation
 - [ ] **2.1** Clean and order regular-season game logs chronologically by player.
 - [ ] **2.2** Calculate cumulative career games, minutes, and counting stats.
