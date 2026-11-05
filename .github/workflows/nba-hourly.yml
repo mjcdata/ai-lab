@@ -55,7 +55,14 @@ jobs:
           prompt: |
             Read AGENTS.md, WORK_PLAN.md, relevant project WORKPLAN.md files,
             and recent commits. Follow the active project and priorities in WORK_PLAN.md.
-            Select and implement at most ONE unchecked task explicitly tagged [CODEX-READY] in the active project's work plan. If none exists,\n            make no changes. A tag is required even if other tasks are unchecked.\n            Do not skip ahead past unmet dependencies or decision gates.\n            Research, source evaluation, comparisons, recommendations, and\n            data acquisition are handled by the user with ChatGPT, not Codex.\n            Never perform research tasks or edit a work plan merely to log\n            blocked research. Only implement approved code, tests, or technical\n            documentation directly supporting that implementation.
+            Select and implement at most ONE unchecked task explicitly tagged [CODEX-READY] in the active project's work plan. If none exists,
+            make no changes. A tag is required even if other tasks are unchecked.
+            Do not skip ahead past unmet dependencies or decision gates.
+            Research, source evaluation, comparisons, recommendations, and
+            data acquisition are handled by the user with ChatGPT, not Codex.
+            Never perform research tasks or edit a work plan merely to log
+            blocked research. Only implement approved code, tests, or technical
+            documentation directly supporting that implementation.
             If the next task is an approval gate or requires a consequential decision,
             do not bypass it; make no changes and explain what approval is needed.
             Never bulk-download datasets, run expensive training, incur additional
