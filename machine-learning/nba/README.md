@@ -98,7 +98,7 @@ Future derived datasets must call `exclude_unresolved_duplicates(rows)` before
 aggregation. It excludes **all** rows in repeated player/game groups, including
 identical duplicates, and preserves order and values for the remaining records.
 It leaves the raw input unchanged. This helper does not resolve conflicts or
-certify other data quality; no derived dataset or cumulative totals exist yet.
+certify other data quality; the preparation module applies this policy before computing totals.
 Any resolution needs independently reviewed evidence before those records can
 be reintroduced.
 
@@ -126,3 +126,53 @@ ChatGPT. Before feature preparation, record the evidence and unresolved gaps:
 
 Full historical acquisition and independent completeness validation remain open
 under WBS 1.6. These offline checks do not complete either activity.
+
+## DATA-2: offline pilot preparation
+
+From this directory, with the three existing MacBook caches present:
+
+```sh
+uv run --offline python -m nba_player_similarity.preparation --data-dir data
+uv run --offline python -m unittest discover -s tests -v
+```
+
+Preparation has no fetch fallback. It requires all three nonempty raw caches,
+checks regular-season SEASON_ID against each filename, and writes only
+`data/derived/{season}.json` and `data/derived/quality.json`. The summary records
+raw SHA-256 hashes, input/output/excluded counts, unusable metric counts and
+usable-minute checkpoint counts. Reruns deterministically replace derived files;
+raw bytes are untouched. A failed run is not validation of older output files.
+
+`cumulative(rows)` excludes every repeated player/game group, rejects missing
+identifiers and invalid dates, and sorts by player, date, then game ID. Dates
+accept ISO dates and NBA-style `OCT 01, 2024`. Totals reset for each player/season.
+Games count retained observations, not verified scheduled appearances. No missing
+games are inferred. `observed_totals` are partial sums with explicit `coverage`
+counts; entirely unavailable totals are null. Missing, negative, nonnumeric,
+boolean and nonfinite metric values are unusable, never filled with zero.
+Cumulative minutes are null after any unusable minute observation. Per-36 rates
+require positive complete observed minutes and full observed-game coverage for
+each feature; per-game rates likewise require complete feature coverage.
+Original minute values are summed without rounding or inventing fractions.
+Whole-minute source precision can cause discrepancies with published totals.
+
+`match_checkpoints` selects the nearest eligible minute checkpoint per player
+inside the approved inclusive ±10% target window. Equal-distance ties use earliest
+date then game ID. Default eligibility requires all six features; callers may
+explicitly supply an era-appropriate nonempty subset of the approved six, with
+complete coverage for every selected feature. It rejects mixed season scopes.
+This is minute-checkpoint selection only, not nearest-neighbor similarity scoring.
+
+Pilot seasons are nonconsecutive samples, **not complete careers**. The module
+never combines them into pilot career checkpoints. Full-history use requires
+`cumulative(..., scope="career", complete_history=True)`; that assertion must
+come from independently acquired complete history, not this pilot. Excluded
+records conservatively invalidate career matching for the entire supplied set.
+Even fully observed retained data does not establish historical completeness.
+Zero-minute early-era checkpoints remain in derived audit output but cannot match.
+
+Validation here used synthetic offline fixtures (20 total suite tests), including
+three-season file processing, reproducibility and byte-for-byte raw preservation.
+The actual MacBook pilot caches were not present in the cloud checkout; no actual
+pilot quality counts or processed dataset are claimed. Run the command above
+locally to obtain them. No data acquisition or model training is part of DATA-2.
