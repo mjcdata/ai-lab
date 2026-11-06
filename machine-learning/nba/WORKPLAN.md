@@ -32,6 +32,13 @@ Build a public React + Python application that returns the **top five historical
 - Total: 50,582 player-game rows retrieved and cached locally. This is **not** confirmation of historical completeness or correctness. The 1946-47 raw data includes two conflicting John Murphy team records (PHW and NYK) for game 0024600076; retain raw records and exclude unresolved player-game conflicts from derived aggregates.
 - No model training or bulk historical download was performed. The user has not supplied an offline unit-test result for the latest changes.
 
+## Minute precision decision — 2026-11-05
+
+- **Approved by user:** Accept the game-level `MIN` values as supplied in the local NBA API cache, including whole-minute precision; do not delay the project to recover fractional minutes.
+- The inspected 2024-25 Shai Gilgeous-Alexander record for 2024-10-24 contains `MIN: 36`. The cached three-player reconciliation matched published games and points, but minute sums differed: Shai 2,596 vs 2,597.6; Nikola Jokić 2,575 vs 2,570.8; Anthony Edwards 2,868 vs 2,871.1. These observations are consistent with limited minute precision, but do not establish whether rounding originated upstream or during normalization.
+- **Implementation rule:** Preserve original cached `MIN` values without inventing fractional minutes; sum them for cumulative career-minute checkpoints and use the sums as denominators for per-36 rates. Document that rounding can create small discrepancies versus official totals and derived rates. Never treat the values as second-level precision.
+- This decision does **not** establish historical completeness or resolve early-era missingness, duplicate conflicts, or eligibility for era-aware comparisons. WBS 1.6 remains open.
+
 ## Work breakdown structure
 
 ### 1.0 Historical data acquisition
