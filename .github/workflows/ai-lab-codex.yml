@@ -24,6 +24,9 @@ jobs:
           persist-credentials: true
           fetch-depth: 0
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
       - name: Check for eligible work before API call
         id: eligible
         shell: bash
