@@ -3,7 +3,9 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
-from nba_player_similarity.ingestion import ingest, validate_rows, validate_season
+from nba_player_similarity.ingestion import (
+    exclude_unresolved_duplicates, ingest, validate_rows, validate_season,
+)
 
 
 def row(player=1, game="001", **changes):
@@ -63,6 +65,40 @@ class IngestionTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 ingest("1946-47", root, fetcher=lambda _: [row(MIN=-5)])
             self.assertFalse((root / "raw" / "1946-47.json").exists())
+
+    def test_report_matches_cached_records_on_rerun(self):
+        rows = [row(), row(PTS=12), row(player=2, REB=0, AST=2),
+                row(player=3, REB=5)]
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            first = ingest("1946-47", root, fetcher=lambda _: rows)
+            second = ingest("1946-47", root, fetcher=lambda _: self.fail("unexpected network"))
+            cached = json.loads((root / "raw" / "1946-47.json").read_text())
+            saved = json.loads((root / "reports" / "1946-47.json").read_text())
+            self.assertEqual(saved, second)
+            self.assertEqual({**first, "source": "cache"}, second)
+            self.assertEqual(second["rows"], len(cached))
+            self.assertEqual(second["missing_counts"]["REB"], 2)
+            self.assertEqual(second["missing_percent"]["REB"], 50.0)
+            self.assertEqual(second["missing_percent"]["AST"], 75.0)
+            self.assertEqual(second["duplicate_player_game_rows"], 1)
+            self.assertEqual(len(second["duplicate_conflict_rows"]), 2)
+            self.assertEqual(len(exclude_unresolved_duplicates(cached)), 2)
+
+    def test_excludes_entire_duplicate_groups_without_changing_raw(self):
+        rows = [row(player=1), row(player=2, TEAM_ABBREVIATION="PHW"),
+                row(player=2, TEAM_ABBREVIATION="NYK"), row(player=2, PTS=20),
+                row(player=3), row(player=3), row(player=1, game="002")]
+        original = json.loads(json.dumps(rows))
+        derived = exclude_unresolved_duplicates(rows)
+        self.assertEqual(derived, [rows[0], rows[-1]])
+        self.assertEqual(rows, original)
+        self.assertEqual(validate_rows(derived, "1946-47")["duplicate_player_game_rows"], 0)
+        derived[0]["PTS"] = 99
+        self.assertEqual(rows, original)
+
+    def test_duplicate_exclusion_handles_empty_input(self):
+        self.assertEqual(exclude_unresolved_duplicates([]), [])
 
 
 if __name__ == "__main__":

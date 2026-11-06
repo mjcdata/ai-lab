@@ -39,6 +39,18 @@ def _number(value: object) -> float | None:
         return None
 
 
+def exclude_unresolved_duplicates(rows: list[dict]) -> list[dict]:
+    """Return only unique player/game groups; leave raw records unchanged.
+
+    Future derived datasets must apply this safeguard before aggregating.
+    Even identical duplicate rows remain unresolved until independently reviewed.
+    This is not a substitute for identifier or historical coverage validation.
+    """
+    keys = [(str(row.get("PLAYER_ID")), str(row.get("GAME_ID"))) for row in rows]
+    counts = Counter(keys)
+    return [row.copy() for row, key in zip(rows, keys) if counts[key] == 1]
+
+
 def validate_rows(rows: list[dict], season: str) -> dict:
     """Report missingness and structural issues without filling historical nulls."""
     if not rows:

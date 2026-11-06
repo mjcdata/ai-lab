@@ -36,3 +36,93 @@ uv run python -m unittest discover -s tests -v
 ```
 
 Local `data/` is ignored by Git.
+
+## Pilot lineage and cache review
+
+The user reported successful MacBook retrievals on 2026-11-05 using
+`nba_api.stats.endpoints.leaguegamelog.LeagueGameLog`, with player logs
+(`player_or_team_abbreviation="P"`) and `season_type_all_star="Regular Season"`.
+The pilot contains 6,508 rows for 1946-47, 17,768 for 1977-78, and 26,306 for
+2024-25 (50,582 total). These are user-reported acquisition results, not an
+independent audit of the local files. Detailed missingness is recorded in
+[the work plan](WORKPLAN.md).
+
+The lineage is endpoint response → pandas scalar/null normalization → raw
+JSON records → validation report. Missing values become JSON `null`; no
+statistics are filled and duplicate records remain in raw storage. Reports
+are regenerated from those records. Their `source` field describes the current
+run (`nba_api` or `cache`), not the original acquisition time. The current
+format does not capture retrieval timestamps, dependency versions, hashes,
+or the unnormalized HTTP response. Preserve the original cache and record
+these details separately during a local quality review; they cannot be
+reconstructed from a report alone.
+
+### Re-run from existing files without network access
+
+From this project directory, the following validates all three caches and
+regenerates reports. It fails if any cache is absent; the injected fetcher
+prevents accidental acquisition:
+
+```sh
+uv run python - <<'PY'
+from pathlib import Path
+from nba_player_similarity.ingestion import PILOT, ingest
+
+def offline_only(season):
+    raise RuntimeError(f"Missing cache for {season}; offline review only")
+
+for season in PILOT:
+    print(ingest(season, Path("data"), fetcher=offline_only))
+PY
+```
+
+The ingestion CLI reuses existing season files but fetches missing ones.
+Interrupted acquisition resumes by retaining completed season files; there is
+no partial-season resume. `--data-dir` selects another cache root. `--refresh`
+fetches again and replaces an existing raw file after validation, so preserve
+the original files before a user-authorized refresh. Reports are overwritten
+on a successful run; validation failures raise an error and may leave an older
+report in place. Inspect the error and raw records rather than treating that
+older report as evidence of a successful run.
+
+### Unresolved duplicate policy
+
+Player/game identity uses `PLAYER_ID` and `GAME_ID`, compared as strings.
+`duplicate_player_game_rows` counts excess rows (group size minus one), while
+`duplicate_conflict_rows` lists selected fields for every row in each repeated
+group. Consult raw records for fields omitted from the report.
+The known 1946-47 John Murphy conflict for game `0024600076` has PHW and NYK
+records; no team assignment has been resolved.
+
+Future derived datasets must call `exclude_unresolved_duplicates(rows)` before
+aggregation. It excludes **all** rows in repeated player/game groups, including
+identical duplicates, and preserves order and values for the remaining records.
+It leaves the raw input unchanged. This helper does not resolve conflicts or
+certify other data quality; no derived dataset or cumulative totals exist yet.
+Any resolution needs independently reviewed evidence before those records can
+be reintroduced.
+
+### Historical quality review checklist
+
+The user performs independent source evaluation and totals comparisons with
+ChatGPT. Before feature preparation, record the evidence and unresolved gaps:
+
+- Confirm cached row counts and report missing counts/percentages agree;
+  distinguish nulls from observed zeros for every statistic and era.
+- Review missing player/game IDs, dates and season assignments, negative or
+  nonnumeric statistics, and minutes plausibility, including early-era minutes.
+  Current automated checks cover only required columns on the first record,
+  missing player/game IDs, minutes in 0–70, and nonnegative numeric points;
+  they do not establish complete schema or historical correctness.
+- Inspect every repeated player/game group in raw data; retain unresolved
+  conflicts in the cache and exclude them from future aggregates.
+- Independently reconcile player/team season games, minutes and available
+  counting totals against user-reviewed sources; record the source, access date,
+  expected totals, discrepancies and conclusions. Assess missing games and
+  players as well as missing fields; a zero-null report does not prove coverage.
+- Record cache provenance, local environment versions and any changes between
+  retrievals. Document unresolved early-era coverage and minutes limitations
+  before deciding comparison eligibility under the approved methodology.
+
+Full historical acquisition and independent completeness validation remain open
+under WBS 1.6. These offline checks do not complete either activity.
