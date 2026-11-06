@@ -2,9 +2,8 @@ name: AI Lab Codex automation
 
 on:
   workflow_dispatch:
-  # Enable after a manual end-to-end direct-push test:
-  # schedule:
-  #   - cron: '17 * * * *'
+  schedule:
+    - cron: '17 * * * *'
 
 permissions:
   contents: write
