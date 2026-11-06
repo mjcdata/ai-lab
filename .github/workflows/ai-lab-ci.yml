@@ -1,0 +1,22 @@
+name: AI Lab CI
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-nba:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+      - name: Run NBA offline tests
+        working-directory: machine-learning/nba
+        run: uv run --offline python -m unittest discover -s tests -v
