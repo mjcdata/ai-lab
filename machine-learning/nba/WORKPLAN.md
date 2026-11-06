@@ -2,7 +2,7 @@
 
 **Project:** AI Lab / Machine Learning / NBA  
 **Status:** Source approved; three-season pilot ingested; historical quality validation pending  
-**Execution:** Codex implements routine work autonomously; user approves major decisions.
+**Execution:** User manually launches Codex for approved implementation tasks; user approves major decisions. GitHub Actions performs tests only.
 
 ## Goal and scope
 
@@ -103,7 +103,7 @@ Build a public React + Python application that returns the **top five historical
 ## Codex operating rules
 - Follow repository `AGENTS.md` and keep project code inside `machine-learning/nba/`; use `uv` for the Python environment.
 - Explain significant steps concisely; assume user knows ML fundamentals.
-- Proceed independently on routine coding, tests, cleaning, and documentation.
+- Once manually launched for an approved `[CODEX-READY]` task, proceed independently on routine coding, tests, cleaning, and documentation. Do not assume unattended or scheduled Codex runs.
 - Pause **only for consequential decisions** (data source, methodology, architecture, scope, paid services, public deployment); present options and a recommendation.
 - Do not treat a milestone boundary as an automatic approval checkpoint unless it includes a decision gate.
-- **Research WBS 1.1–1.5 is performed by the user with ChatGPT, not automated Codex. Only run implementation tasks tagged `[CODEX-READY]`; SETUP-1 is independently approved and does not require research or data access. Do not bulk-download historical data until 1.5 is approved.**
+- **Research WBS 1.1–1.5 is performed by the user with ChatGPT, not Codex. Manually initiate Codex only for approved implementation tasks tagged `[CODEX-READY]`; SETUP-1 is independently approved and does not require research or data access. Do not bulk-download historical data until 1.5 is approved.**
