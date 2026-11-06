@@ -1,7 +1,7 @@
 # NBA Player Similarity — Work Breakdown Structure (WBS)
 
 **Project:** AI Lab / Machine Learning / NBA  
-**Status:** Source approved; three-season pilot ingested; historical quality validation pending  
+**Status:** Source approved; three-season pilot ingested; historical pilot limitations accepted; data preparation next  
 **Execution:** User manually launches Codex for approved implementation tasks; user approves major decisions. GitHub Actions performs tests only.
 
 ## Goal and scope
@@ -38,6 +38,16 @@ Build a public React + Python application that returns the **top five historical
 - The inspected 2024-25 Shai Gilgeous-Alexander record for 2024-10-24 contains `MIN: 36`. The cached three-player reconciliation matched published games and points, but minute sums differed: Shai 2,596 vs 2,597.6; Nikola Jokić 2,575 vs 2,570.8; Anthony Edwards 2,868 vs 2,871.1. These observations are consistent with limited minute precision, but do not establish whether rounding originated upstream or during normalization.
 - **Implementation rule:** Preserve original cached `MIN` values without inventing fractional minutes; sum them for cumulative career-minute checkpoints and use the sums as denominators for per-36 rates. Document that rounding can create small discrepancies versus official totals and derived rates. Never treat the values as second-level precision.
 - This decision does **not** establish historical completeness or resolve early-era missingness, duplicate conflicts, or eligibility for era-aware comparisons. WBS 1.6 remains open.
+
+## Historical pilot review — accepted limitations (2026-11-05)
+
+**User decision:** End game-by-game historical reconciliation after the pilot; document findings and proceed to data preparation. Do not investigate individual early-era discrepancies further unless they materially affect the model.
+
+- **1946-47:** 6,508 cached player-game rows. MIN and PTS have no nulls, but inspected leading players have total MIN = 0, making per-36 and cumulative-minute matching unreliable. REB/STL/BLK/TOV are 100% missing; AST is 97.99% missing. George Nostrand has 62 distinct cached games / 488 points versus a previously consulted reference of 61 / 482; discrepancy remains unresolved. One duplicate player-game pair has conflicting team records. Preserve the raw data; exclude zero-minute/ineligible checkpoints and unresolved duplicate groups from modeling.
+- **1977-78:** 17,768 rows. Missing REB 0.43%, AST 1.77%, STL 32.72%, BLK 28.25%, TOV 49.8%. Two duplicate player-game pairs have conflicting team records. James Edwards' 83 games / 2,405 minutes / 1,262 points reconciled to the previously consulted reference; Jim Price's 83 games / 723 points matched while cached minutes (1,909) differed from the reference (1,929). Do not impute missing values as zero.
+- **2024-25:** 26,306 rows, no missing values in the seven reported metrics, no duplicate player-game pairs. Games and points reconciled for Shai Gilgeous-Alexander (76 / 2,484), Nikola Jokić (70 / 2,071), and Anthony Edwards (79 / 2,177) when matched by PLAYER_ID. Minute sums differ slightly from published totals; whole-minute precision is accepted.
+- **Policy:** Retain original raw data; keep unresolved duplicate groups out of derived aggregates; use era-aware feature availability, require positive usable cumulative minutes for per-36 comparisons, and surface coverage limitations in model documentation. A small pilot and spot checks do **not** establish full historical completeness.
+- **Next work:** Move to WBS 2.1–2.6 on the available pilot dataset, then expand ingestion only as needed for historical coverage. Full-history ingestion under WBS 1.6 remains open; do not mark it complete based on the pilot.
 
 ## Work breakdown structure
 
