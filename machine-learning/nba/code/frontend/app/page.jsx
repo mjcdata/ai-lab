@@ -2,17 +2,8 @@
 import { useEffect, useState } from "react";
 import { PlayerSearch } from "./components/PlayerSearch";
 import { ComparisonResults } from "./components/ComparisonResults";
-async function read(url, signal) {
-  const response = await fetch(url, { signal });
-  const data = await response.json();
-  if (!response.ok)
-    throw new Error(
-      typeof data.detail === "string"
-        ? data.detail
-        : "Unable to load results. Please retry.",
-    );
-  return data;
-}
+import { searchPlayers, loadComparisons } from "../lib/data";
+
 export default function Home() {
   const [query, setQuery] = useState("");
   const [players, setPlayers] = useState([]);
@@ -30,10 +21,7 @@ export default function Home() {
     setSearchError("");
     setPlayers([]);
     const timer = setTimeout(() => {
-      read(
-        `/api/players?q=${encodeURIComponent(query)}&limit=25`,
-        controller.signal,
-      )
+      searchPlayers(query, controller.signal)
         .then((data) => {
           setPlayers(data.players);
           setSearchStatus("ready");
@@ -56,10 +44,7 @@ export default function Home() {
     setLoading(true);
     setError("");
     setResult(null);
-    read(
-      `/api/players/${selected.player_id}/comparisons?mode=${mode}`,
-      controller.signal,
-    )
+    loadComparisons(selected.player_id, mode, controller.signal)
       .then(setResult)
       .catch((err) => {
         if (err.name !== "AbortError") setError(err.message);

@@ -149,8 +149,8 @@ User authorized an isolated experiment, not a production methodology change. Tes
 
 ### 6.0 Public deployment
 - [x] **6.1** Deployment architecture research completed 2026-11-08; comparison, sizing evidence and recommendation below. Research only; no deployment or architecture implementation.
-- [ ] **6.2 DECISION GATE:** Obtain approval for hosting approach and any recurring costs.
-- [ ] **6.3** Deploy React frontend and Python API; validate production behavior.
+- [x] **6.2 DECISION GATE:** User approved precomputed static Next.js with Cloudflare Pages preferred and a $0/month hosting target on 2026-11-08. Authorized local implementation/validation only; public deployment, purchases and recurring automation remain unauthorized.
+- [ ] **6.3** Public deployment pending separate approval and redistribution review. Local static Next.js export/snapshot implementation is complete and validated; the retained FastAPI service is local-only, not required by the public/static architecture.
 - [ ] **6.4** Link independent NBA app from existing portfolio.
 - [ ] **6.5** Document deployment, operations, and reproducibility.
 
@@ -158,7 +158,7 @@ User authorized an isolated experiment, not a production methodology change. Tes
 
 ## WBS 6.1 deployment architecture research — 2026-11-08
 
-**Recommendation pending WBS 6.2:** Precompute the approved latest-checkpoint results for all 569 players in both modes locally; export Next.js as a static site and host the UI, small search index and per-player/mode JSON on Cloudflare Pages Free. Keep FastAPI/Python as the local development and reproducible computation path. A public runtime API, database, R2 bucket or serverless function is unnecessary for this fixed-season MVP. Do not implement this recommendation until approved.
+**Research recommendation (subsequently approved for local implementation):** Precompute the approved latest-checkpoint results for all 569 players in both modes locally; export Next.js as a static site and host the UI, small search index and per-player/mode JSON on Cloudflare Pages Free. Keep FastAPI/Python as the local development and reproducible computation path. A public runtime API, database, R2 bucket or serverless function is unnecessary for this fixed-season MVP. Implementation was subsequently approved for local validation only; public deployment remains unapproved.
 
 ### Comparison and estimated monthly cost
 
@@ -202,7 +202,15 @@ Research computed response sizes in memory using the unchanged model and existin
 
 Approve **precomputed results + static Next.js export + Cloudflare Pages Free** as the proposed architecture and a **$0 recurring hosting target**, with no paid upgrade, domain purchase or deployment yet. Approval to implement the export adapter is separate from approval to publish it. If retaining a live public API is a portfolio requirement, choose that explicitly and approve its hosting budget after memory sizing instead.
 
-The existing source-research decision also leaves **public redistribution/licensing review unresolved**. Public comparison JSON includes NBA-derived statistics. Neither precomputation nor an API establishes publication permission. Resolve/document that existing gate before public upload; architecture research makes no legal conclusion. WBS 6.2 remains unchecked, 6.3–6.5 remain unstarted. No infrastructure was registered, purchased or deployed, and no production model/UI code was changed.
+The existing source-research decision also leaves **public redistribution/licensing review unresolved**. Public comparison JSON includes NBA-derived statistics. Neither precomputation nor an API establishes publication permission. Resolve/document that existing gate before public upload; architecture research makes no legal conclusion. At the research checkpoint WBS 6.2 was pending; the subsequent local implementation approval is recorded below. Public deployment/linking/operations tasks remain uncompleted. No infrastructure was registered, purchased or deployed, and no production model/UI code was changed.
+
+## Approved static architecture — local implementation complete (2026-11-08)
+
+User approved the WBS 6.1 precomputed recommendation and $0/month Cloudflare Pages target. Added an offline snapshot CLI, immutable versioned releases and a final atomic activation pointer. Each release records generation timestamp, season, model/code version, source hashes and per-file checksums. Staged and validated **569 players × 2 modes = 1,138 individual result files**, plus a search index/manifest; no bulk-results browser bundle. Shared API/snapshot response decoration preserves all warnings, names, reference stats, mode values, distances and six-feature explanations; original scoring/preparation source is unchanged.
+
+The validated export contains 1,171 files; the largest asset is 242,212 bytes (well below the researched 25 MiB limit). Next.js now statically exports with a browser search/result loader. Removed its runtime API proxy; FastAPI remains independently runnable locally with its original routes. Build-time staging verifies artifact integrity and includes only the selected release. Generator/build/refresh procedures are in README and support explicit invocation with paths, not a configured schedule. Failed generation preserves the last valid pointer/release; concurrent publication is locked. No deployment config, paid service, public upload or recurring automation was created.
+
+**Validation:** 40 Python tests; 4 Node static-loader/staging tests; 8 desktop/mobile browser cases; fully static production build. All 1,138 actual result payloads exactly match FastAPI responses in both modes. Failure tests cover partial generation, parity mismatch, activation failure, corrupt build inputs and unchanged previous assets. Source data hashes unchanged. Static UI tested with the API listener stopped; no runtime API calls. WBS 6.3–6.5 stay open. The user must review this local result; public redistribution review and explicit publication approval remain required before any deployment.
 
 ## Future enhancements (not version 1)
 - Playoff comparisons.

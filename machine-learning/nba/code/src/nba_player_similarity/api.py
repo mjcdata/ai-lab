@@ -1,12 +1,12 @@
 """Read-only local HTTP adapter for the approved season baseline."""
 from contextlib import asynccontextmanager
-import copy
 import json
 import os
 from pathlib import Path
 from typing import Literal
 from fastapi import FastAPI, HTTPException, Query
 from .similarity import SeasonBaseline
+from .responses import comparison_response
 
 
 def create_app(data_dir=None):
@@ -62,15 +62,8 @@ def create_app(data_dir=None):
     @app.get('/players/{player_id}/comparisons')
     def comparisons(player_id:str,mode:Literal['per36','per_game']='per36'):
         player(player_id,mode)
-        # Copy response before adding names/exposure warnings; never mutate model state.
-        result=copy.deepcopy(app.state.baselines[mode].compare(player_id))
-        result['reference']['name']=app.state.names[player_id]
-        for comparison in result['comparisons']:
-            comparison['name']=app.state.names[comparison['player_id']]
-        result['season']='2024-25'
-        result['exposure_policy']='No extra games/minutes cutoff; compare exact games and cumulative season minutes for each checkpoint.'
-        result['warnings'].append('Limited playing time can produce unstable rates or zero-distance matches without reliable player equivalence. Scaler filtering is not adopted; all eligible players still contribute.')
-        return result
+        return comparison_response(app.state.baselines[mode], app.state.names, player_id)
+
 
     return app
 

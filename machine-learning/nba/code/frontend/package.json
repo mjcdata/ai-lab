@@ -4,10 +4,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev --hostname 127.0.0.1",
-    "build": "next build --webpack",
-    "start": "next start --hostname 127.0.0.1",
-    "test": "playwright test"
+    "dev": "node scripts/prepare-snapshot.mjs && next dev --hostname 127.0.0.1",
+    "build": "node scripts/prepare-snapshot.mjs && next build --webpack",
+    "start": "python3 -m http.server 3000 --bind 127.0.0.1 --directory out",
+    "test": "playwright test",
+    "test:unit": "node --test tests/data.test.mjs"
   },
   "dependencies": {
     "next": "16.4.5",

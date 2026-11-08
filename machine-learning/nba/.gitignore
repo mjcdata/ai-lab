@@ -12,3 +12,5 @@ code/frontend/test-results/
 code/frontend/playwright-report/
 code/frontend/.env*
 !code/frontend/.env.example
+code/frontend/public/snapshots/
+code/frontend/public/.snapshot-stage-*/

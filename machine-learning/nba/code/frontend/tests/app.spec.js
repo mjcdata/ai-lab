@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test('live search, comparisons, explanations and both modes', async ({ page }) => {
   const errors=[]; page.on('pageerror',e=>errors.push(e.message));
+  await page.route('**/api/**',route=>{errors.push('Unexpected runtime API request');return route.abort();});
   await page.goto('/');
   await expect(page).toHaveTitle('NBA Player Similarity');
   await expect(page.getByRole('heading', {level:1})).toHaveText('NBA Player Similarity');
@@ -24,29 +25,29 @@ test('live search, comparisons, explanations and both modes', async ({ page }) =
   expect(errors).toEqual([]);
 });
 
-test('no search results and a recoverable search failure', async ({page})=>{
+test('snapshot index failure retries and search supports empty results',async({page})=>{
+ await page.route('**/snapshots/**/players.json',route=>route.fulfill({status:503,contentType:'application/json',body:'{}'}));
  await page.goto('/');
+ await expect(page.locator('main [role=alert]')).toContainText('Snapshot data unavailable');
+ await page.unroute('**/snapshots/**/players.json');
+ await page.getByRole('button',{name:'Retry search'}).click();
  await page.getByLabel('Search the 2024–25 roster').fill('nobody-matches-this');
  await expect(page.getByText('No players found. Try a different name.')).toBeVisible();
- await page.route('**/api/players?**',route=>route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({detail:'Test API unavailable'})}));
  await page.getByLabel('Search the 2024–25 roster').fill('Curry');
- await expect(page.locator('main [role=alert]')).toContainText('Test API unavailable');
- await page.unroute('**/api/players?**');
- await page.getByRole('button',{name:'Retry search'}).click();
  await expect(page.getByRole('button',{name:/Stephen Curry/})).toBeVisible();
 });
 
 test('comparison loading, failure, recovery and empty candidates',async({page})=>{
  await page.goto('/');
  await page.getByLabel('Search the 2024–25 roster').fill('Bronny');
- await page.route('**/api/players/*/comparisons?**',async route=>{await new Promise(resolve=>setTimeout(resolve,500));await route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({detail:'Test comparison failure'})});});
+ await page.route('**/snapshots/**/results/*/*.json',async route=>{await new Promise(resolve=>setTimeout(resolve,500));await route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({detail:'Test comparison failure'})});});
  await page.getByRole('button',{name:/Bronny James/}).click();
  await expect(page.getByRole('heading',{name:'Finding statistical neighbors…'})).toBeVisible();
- await expect(page.locator('main [role=alert]')).toContainText('Test comparison failure');
- await page.unroute('**/api/players/*/comparisons?**');
+ await expect(page.locator('main [role=alert]')).toContainText('Snapshot data unavailable');
+ await page.unroute('**/snapshots/**/results/*/*.json');
  await page.getByRole('button',{name:'Retry comparisons'}).click();
  await expect(page.locator('.comparison')).toHaveCount(5);
- await page.route('**/api/players/*/comparisons?**',async route=>{
+ await page.route('**/snapshots/**/results/*/*.json',async route=>{
   const response=await route.fetch(); const data=await response.json();data.comparisons=[];data.candidate_count=0;
   await route.fulfill({response,json:data});
  });
@@ -65,7 +66,8 @@ test('reference statistics match API values in both modes and fit the viewport',
   ]) {
     await page.getByRole('button', { name: button, exact: true }).click();
     await expect(page.locator('.reference-stats-label')).toHaveText(label);
-    const response = await page.request.get(`/api/players/201939/comparisons?mode=${mode}`);
+    const current = await (await page.request.get('/snapshots/current.json')).json();
+    const response = await page.request.get(`/snapshots/releases/${current.snapshot_id}/results/${mode}/201939.json`);
     expect(response.ok()).toBeTruthy();
     const data = await response.json();
     const cells = page.locator('.reference-stats > div');

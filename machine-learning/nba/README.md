@@ -42,65 +42,123 @@ Baseline/evaluation Markdown reports moved into `artifacts/` and remain tracked;
 future generated model/scaler binaries, screenshots and evaluation outputs there
 are ignored. There are no persisted trained model files to migrate.
 
-### Launch locally (two terminals)
+### Build and view the static application
 
-From `machine-learning/nba/`, terminal 1:
+One-time dependency setup (package downloads only, no NBA acquisition):
 
 ```sh
+# From machine-learning/nba/:
 uv sync --locked
-uv run --offline uvicorn nba_player_similarity.api:app --host 127.0.0.1 --port 8000
+# From code/frontend/:
+pnpm install --frozen-lockfile
 ```
 
-Terminal 2, from `machine-learning/nba/code/frontend/` (Node >=20.9, pnpm):
+Generate and validate a local immutable snapshot, then export Next.js:
 
 ```sh
-pnpm install --frozen-lockfile
+# From machine-learning/nba/:
+uv run --offline python -m nba_player_similarity.snapshot
+cd code/frontend
 pnpm build
 pnpm start
 ```
 
-Open **http://127.0.0.1:3000**. API docs: **http://127.0.0.1:8000/docs**.
-For frontend iteration use `pnpm dev` instead of build/start. Stop either server
-with Ctrl+C. Nothing is deployed; both listeners bind to loopback.
+Open **http://127.0.0.1:3000**. `pnpm start` serves `out/` using Python's static
+HTTP server; there is no Next.js runtime server or Python model API dependency.
+FastAPI remains available independently from the NBA root:
 
-On this Mac, if `uv`, Node or pnpm are absent from PATH, use the existing bundled
-tools before the commands above:
+```sh
+uv run --offline uvicorn nba_player_similarity.api:app --host 127.0.0.1 --port 8000
+```
+
+Optional API docs: **http://127.0.0.1:8000/docs**. `pnpm dev` stages the same
+validated snapshot before starting Next.js for UI iteration. The static UI does
+not proxy to FastAPI. Local generated datasets and snapshot assets stay ignored.
+No accounts, public upload, paid service or recurring automation are configured.
+
+On this Mac, if commands are absent from PATH, use the installed tools:
 
 ```sh
 export PATH="$HOME/.local/bin:$HOME/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$HOME/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:$PATH"
 ```
 
-The UI is named **NBA Player Similarity**. `app/page.jsx` owns request lifecycle and page state; `app/components/` contains separate `PlayerSearch.jsx`, `ComparisonResults.jsx` and `ComparisonCard.jsx` files. The statistical-explanation helper stays with its card, and one shared number formatter avoids duplication without adding dependencies or changing API/model behavior.
+### Snapshot layout, refresh and failure safety
 
-The Next.js server proxies only known read endpoints from `/api/` to
-`http://127.0.0.1:8000`. If the API uses another port, start Next.js with
-`NBA_API_URL=http://127.0.0.1:8001 pnpm start` (or `pnpm dev`). No CORS middleware,
-remote APIs, authentication service or paid integration is needed. The UI shows
-season scope, exposure and distance explanations. Search supports name/ID
-substring queries; refine the search if more than 25 players match.
+`artifacts/snapshots/current.json` is a small atomic pointer to an immutable
+`releases/<snapshot_id>/` directory. Each release has `manifest.json`,
+`players.json`, and **one `results/<mode>/<player_id>.json` file per player/mode**.
+The actual local release contains 569 players / 1,138 comparison records. No
+single bulk-results payload is loaded by the browser. The player index is
+searched/paginated locally, with one coherent release pinned per page session.
+The UI continues to show both modes, reference stats, scores, six-feature
+explanations, dates/exposure, warnings and all loading/error/empty states.
+`page.jsx` manages state; `components/` retains the existing logical boundaries.
 
-### Tests and verification
+The manifest records schema version, UTC generation timestamp, season, model
+version/code digest, source hashes, modes/counts and each file's size/SHA-256.
+The model version combines the approved baseline identifier with a digest of
+scoring/preparation/response code. Generation uses the unchanged scoring model
+and a shared response formatter also used by FastAPI, avoiding divergent data
+contracts. No frontend calculations approximate or rerank model results.
+
+For a refresh, first obtain/prepare any approved source updates through the
+existing local workflow. Snapshot generation itself **never downloads or
+prepares NBA data**. Then run the same generator/build commands above; no
+scheduler is enabled. The CLI also accepts `--data-dir` and `--output-dir` for
+future automated invocations. Only the approved 2024–25 season is accepted;
+adding a new season still requires a scope decision and UI/data updates.
+Set `NBA_SNAPSHOT_DIR` to an absolute artifact snapshot root when building from
+another approved artifact location.
+
+Generation writes into a staging directory under the snapshot root while
+holding `.generation-lock`. It validates every player/mode against the complete
+API-shaped payload, checks counts/eligibility/explanations, serializes finite
+JSON, re-reads checksums, and confirms sources stayed unchanged. Only then is
+the release made immutable and `current.json` atomically replaced. Partial
+computation, bad data, parity failures or activation failure leave the previous
+pointer and release intact. Old releases are retained for rollback; no automatic
+pruning occurs. Concurrent runs fail rather than race. After a killed process,
+inspect for a live generator before manually removing a stale lock/staging dir.
+An orphan fully generated release after a failed activation is safe to retain.
+This protects against process failure; it is not a substitute for disk backups.
+
+`pnpm build` first verifies the active manifest and every indexed file, stages
+only that complete release into ignored `public/snapshots/`, then creates a
+fully static `out/`. A fresh checkout without a local snapshot fails clearly
+instead of attempting NBA downloads or building an empty site. Cloud builds
+would need an explicitly supplied snapshot artifact. No GitHub automation or
+workflow is configured to generate/deploy data. No public build should be
+uploaded before separate deployment permission and redistribution review.
+
+Keep the immutable artifacts for rollback; restore a verified prior manifest
+and pointer with an atomic replacement, then rebuild. Serve a completed `out/`
+directory, never a build-in-progress directory. Publication/version rollout is
+not configured. An already open tab pins its release; if a later deployment no
+longer contains that release, reload the page to select the new snapshot. The
+loader reports a retry/refresh error rather than silently mixing versions.
+
+### Tests
 
 ```sh
-# NBA root, after uv sync:
+# NBA root:
 uv run --offline python -m unittest discover -s code/tests -v
-# Frontend directory, with both local servers running:
+# Frontend directory:
+pnpm run test:unit
+# With the static export serving on port 3000:
 pnpm exec playwright install chromium
 pnpm test
 ```
 
-The first browser installation downloads test tooling, not NBA data. For this
-session the test browser was stored in `/private/tmp/nba-playwright`; set
-`PLAYWRIGHT_BROWSERS_PATH=/private/tmp/nba-playwright` to reuse it.
-Six Playwright cases cover desktop (1440px) and mobile (390px): live player
-search, five comparisons, all six stats, explanation expansion, both modes,
-no horizontal overflow, loading, no search matches, API errors/retry and an
-empty-comparison fixture. Loading/error/empty cases are controlled mocks;
-normal scoring flows use the actual local API. Python API tests use fixtures.
-Next.js production build and all 35 Python tests pass. Dataset/output SHA-256
-hashes and moved model/API source were checked unchanged. Next.js/React and
-Playwright versions are pinned in the frontend lockfile. Model/scaler methodology
-and datasets have not changed. Deployment and public data licensing remain open.
+The browser install is test tooling, not NBA data. This Mac's existing temporary
+browser can be reused with `PLAYWRIGHT_BROWSERS_PATH=/private/tmp/nba-playwright`.
+Validation: **40 Python tests**, **4 Node loader/build-staging tests**, and **8
+desktop/mobile Playwright cases** pass. Failure injection covers partial
+snapshot generation, parity corruption and atomic-pointer activation failures.
+All 1,138 real result files were checked for exact complete JSON parity against
+FastAPI via in-process TestClient. Source cache hashes remain unchanged. The
+static browser suite ran with FastAPI stopped and rejects runtime `/api/`
+requests; both modes, reference stats, explanations/warnings, search, retries,
+loading and empty states pass. Next.js build produces no dynamic routes.
 
 ## Historical ingestion pilot (MacBook only)
 
@@ -333,7 +391,7 @@ instability, including possible zero-distance matches from tiny samples. No
 new exposure threshold or confidence score is invented. Distances are not
 probabilities; this is exploratory 2024–25 season similarity, not career matching.
 All state is read-only after startup; model results are copied before decoration.
-No frontend, database, data download, authentication, or deployment is included.
+The frontend now reads static snapshots; this API remains available for local development. No database, data download, authentication, or deployment is included.
 Use loopback only for this local development service.
 
 ```sh
