@@ -1,7 +1,7 @@
 # NBA Player Similarity — Work Breakdown Structure (WBS)
 
 **Project:** AI Lab / Machine Learning / NBA  
-**Status:** Source approved; three-season pilot ingested; local DATA-2 preparation validated; season-scoped baseline implemented and locally exercised; results review next
+**Status:** Source approved; three-season pilot ingested; local DATA-2 preparation validated; season-scoped baseline implemented and locally exercised; 2024–25 baseline review complete; application decision gate pending
 **Execution:** User manually launches Codex for approved implementation tasks; user approves major decisions. GitHub Actions performs tests only.
 
 ## Goal and scope
@@ -119,12 +119,14 @@ User explicitly approved the fixed latest-checkpoint scaler, equal-weight standa
 **Completion — 2026-11-08:** Implemented `similarity.py`, offline tests and CLI. The local fixed scaler uses 569 players; five representative queries (Anthony Edwards, Nikola Jokić, Alperen Sengun, Stephen Curry, LeBron James) each returned five distinct comparisons within the unchanged window. Full scores, exposures and feature explanations are in [BASELINE_RESULTS.md](BASELINE_RESULTS.md). All 28 offline tests passed. No additional data, frontend or deployment. Generated caches remain untracked. WBS 3.1–3.6 complete for the season-scoped baseline only; WBS 1.6 remains open. Representative runs are observations, not completion of all WBS 4 evaluation tasks. No unresolved baseline methodology approval remains; user review at 4.4 is still required before application build.
 
 ### 4.0 Validation and review
-- [ ] **4.1** Evaluate rookies, veterans, limited-minute players, and different eras.
-- [ ] **4.2** Check sample-size sensitivity, missing features, duplicates, and unexpected rankings.
-- [ ] **4.3** Document limitations and proposed refinements.
+- [x] **4.1** Evaluate rookies, veterans and limited-minute players for the requested 2024–25 scope. Cross-era model evaluation remains deferred; existing historical limitations reviewed only.
+- [x] **4.2** Check sample-size sensitivity, missing features, duplicates, and unexpected rankings.
+- [x] **4.3** Document limitations and proposed refinements.
 - [ ] **4.4 DECISION GATE:** Present representative top-five results for user review before application build.
 
-**Deliverable:** Validated local model and evaluation report.
+**Review completed 2026-11-08:** See [VALIDATION.md](VALIDATION.md). All 569 latest-player queries passed uniqueness, self-exclusion, score explanation and minute-window checks. All had at least five candidates. Preparation reproduced all 26,306 derived rows exactly; 26,305 checkpoints eligible. No raw 2024–25 missing features or duplicate player/game groups; one zero-minute checkpoint excluded. All 28 offline tests passed. Rookie/veteran/limited-minute examples and fixed-scaler playing-time sensitivity documented. Material limitations: unstable tiny-sample rates and their influence on the reference scaler, candidate-pool changes, season-only scope and omitted style features. No methodology changes or new data. WBS 4.1–4.3 complete for this season only; 4.4 still requires user review before application build. Full-history acquisition (1.6) remains open. Recommend transparent exploratory use; any exposure cutoffs or revised scaler need separate approval.
+
+**Deliverable:** Season-scoped validation report; cross-era performance and comprehensive historical validation are not claimed.
 
 ### 5.0 Application development
 - [ ] **5.1** Design Python API (FastAPI candidate) for player search and similarity results.
