@@ -43,3 +43,14 @@ When setting up the lab, create only the structure above and concise README and 
 - Run relevant available tests before committing; if tests fail, do not push. Never force-push. Preserve approval gates and the restriction on large data acquisition, costs, and deployment. Direct-to-main permission is not permission to bypass those gates.
 - GitHub Actions CI runs offline tests on pushes to `main` and manual dispatch. It does not implement tasks, run Codex, or push changes. Start Codex manually for explicitly approved `[CODEX-READY]` tasks.
 - Follow project-specific work plans for deliverables; keep lab-wide operating rules here.
+
+## Task-completion reporting
+
+End each task with a brief, self-contained report using these labels:
+
+- **Outcome:** What was accomplished.
+- **Validation:** What checks or tests passed or failed; distinguish prior results from checks run for this task and state when tests were not run.
+- **Decisions needed:** The specific approvals still required, with a recommendation and short reason. State when none are needed; do not reopen settled decisions.
+- **Next action:** The concrete next step and who should take it.
+
+Use plain language and include enough context that the user need not open repository files. Keep commit hashes and file links as supporting details, not the main message. If no work was performed, explain why and identify the next actionable step; never report only Git status. For scheduled monitoring, honor its quiet-notification rules instead of sending routine completion reports.
