@@ -207,3 +207,57 @@ predictive evaluation. The end-of-season scaler is not a leakage-free predictive
 benchmark. No early-era samples are included. Shooting efficiency and position
 are outside the six-feature model: results are not complete style/quality
 judgments. See [local representative results](BASELINE_RESULTS.md).
+
+## Local FastAPI service (WBS 5.1–5.2)
+
+From `machine-learning/nba/`, install the locked project and test dependencies,
+then start a loopback-only server using existing caches:
+
+```sh
+uv sync --locked
+uv run --offline uvicorn nba_player_similarity.api:app --host 127.0.0.1 --port 8000
+```
+
+Open `http://127.0.0.1:8000/docs` for interactive endpoint documentation.
+The service loads local `data/raw/2024-25.json` for names and
+`data/derived/2024-25.json` for checkpoints once at startup. Set `NBA_DATA_DIR`
+to an absolute cache directory if launching elsewhere. Missing or invalid
+caches stop startup with an actionable error; there is no download fallback.
+Restart after intentionally updating local data. Import alone does not read data.
+Dependency installation may access the package registry; serving and tests use
+no live NBA API calls. On a fresh machine, sync dependencies before offline tests.
+
+| Endpoint | Purpose |
+|---|---|
+| `GET /health` | Ready status, season and eligible player count |
+| `GET /players?q=Curry&limit=25&offset=0` | Case-insensitive name/ID substring search; paginated, alphabetically sorted |
+| `GET /players/201939` | Select a player; latest eligible date, games and season minutes |
+| `GET /players/201939/comparisons?mode=per36` | Up to five distinct comparisons with full explanations |
+
+Selection/search also accept `mode=per36` or `mode=per_game`; per-36 is default.
+Search/select include eligible players only. Unknown/ineligible IDs return 404;
+invalid modes or pagination return 422. Pagination limit is 1–100. Comparison
+responses retain existing model fields: `distance` (lower is closer), diagnostic
+raw distance, checkpoint date/games/minutes, minute differences, six-stat values,
+z-scores and squared-distance contributions, plus readable player names.
+Reference exposure is in `reference`; candidate exposure is in each `checkpoint`.
+Both modes reuse the original fixed-scaler policy and candidate eligibility.
+
+Every response from the comparison endpoint warns about limited-exposure
+instability, including possible zero-distance matches from tiny samples. No
+new exposure threshold or confidence score is invented. Distances are not
+probabilities; this is exploratory 2024–25 season similarity, not career matching.
+All state is read-only after startup; model results are copied before decoration.
+No frontend, database, data download, authentication, or deployment is included.
+Use loopback only for this local development service.
+
+```sh
+uv run --offline python -m unittest discover -s tests -v
+```
+
+Offline API tests use temporary fixtures and FastAPI's in-process TestClient:
+search/pagination, selection, both modes, direct model parity, error handling,
+sparse/low-exposure cases and file preservation. Local real-cache checks also
+verified exact model parity for Bronny James, Curry and Jokić in both modes.
+The pinned Starlette TestClient currently emits an httpx deprecation warning;
+all tests pass. The warning affects the test transport, not scoring or serving.
