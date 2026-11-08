@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import { PlayerSearch, ComparisonResults } from "./components";
+import { PlayerSearch } from "./components/PlayerSearch";
+import { ComparisonResults } from "./components/ComparisonResults";
 async function read(url, signal) {
   const response = await fetch(url, { signal });
   const data = await response.json();

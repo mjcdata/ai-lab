@@ -70,7 +70,7 @@ tools before the commands above:
 export PATH="$HOME/.local/bin:$HOME/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$HOME/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:$PATH"
 ```
 
-The UI is named **NBA Player Similarity**. `app/page.jsx` owns request lifecycle and page state; `app/components.jsx` groups player search, result composition, comparison cards and statistical explanations without adding dependencies or changing API/model behavior.
+The UI is named **NBA Player Similarity**. `app/page.jsx` owns request lifecycle and page state; `app/components/` contains separate `PlayerSearch.jsx`, `ComparisonResults.jsx` and `ComparisonCard.jsx` files. The statistical-explanation helper stays with its card, and one shared number formatter avoids duplication without adding dependencies or changing API/model behavior.
 
 The Next.js server proxies only known read endpoints from `/api/` to
 `http://127.0.0.1:8000`. If the API uses another port, start Next.js with
