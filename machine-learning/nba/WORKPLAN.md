@@ -1,7 +1,7 @@
 # NBA Player Similarity — Work Breakdown Structure (WBS)
 
 **Project:** AI Lab / Machine Learning / NBA  
-**Status:** Source approved; three-season pilot ingested; historical pilot limitations accepted; data preparation next  
+**Status:** Source approved; three-season pilot ingested; local DATA-2 preparation validated; season-scoped baseline planning pending approval
 **Execution:** User manually launches Codex for approved implementation tasks; user approves major decisions. GitHub Actions performs tests only.
 
 ## Goal and scope
@@ -22,7 +22,7 @@ Build a public React + Python application that returns the **top five historical
 - Missing data observed: 1946-47 REB 6508, AST 6377, STL/BLK/TOV 6508; 1951-52 REB 5784, AST 5257, STL/BLK/TOV 6086; 1965-66 AST 945, REB 518, STL/BLK/TOV 6855; 1973-74 REB 1044, AST 1133, STL 9682, BLK 9240, TOV 13379; 1977-78 REB 76, AST 314, STL 5813, BLK 5019, TOV 8848; 1985-86 AST 5, REB/STL/BLK/TOV 6. MIN and PTS had no nulls in these samples, but early minutes still require independent validation.
 - Risks: incomplete historical game logs, cloud IP blocking, throttling, uncertain early minutes, upstream changes. Preserve missing values; validate completeness, duplicates, minutes plausibility, and cross-check independent totals before modeling.
 - Alternative sources remain fallbacks. Public redistribution/licensing requires separate review before deployment.
-- **DATA-1 pilot implemented and locally executed:** CLI, per-season raw JSON cache, structural and missingness reports. Pilot seasons: 1946-47, 1977-78, 2024-25. The user reported successful runs; independent historical completeness and test-suite verification are still pending.
+- **DATA-1 pilot implemented and locally executed:** CLI, per-season raw JSON cache, structural and missingness reports. Pilot seasons: 1946-47, 1977-78, 2024-25. Local retrieval and DATA-2 offline tests are verified below; full historical completeness remains unverified.
 
 ## Local ingestion pilot results — 2026-11-05
 
@@ -30,7 +30,7 @@ Build a public React + Python application that returns the **top five historical
 - 1977-78: 17,768 rows; missing MIN 0%, PTS 0%, REB 0.43%, AST 1.77%, STL 32.72%, BLK 28.25%, TOV 49.8%.
 - 2024-25: 26,306 rows; missing MIN, PTS, REB, AST, STL, BLK, TOV 0%.
 - Total: 50,582 player-game rows retrieved and cached locally. This is **not** confirmation of historical completeness or correctness. The 1946-47 raw data includes two conflicting John Murphy team records (PHW and NYK) for game 0024600076; retain raw records and exclude unresolved player-game conflicts from derived aggregates.
-- No model training or bulk historical download was performed. The user has not supplied an offline unit-test result for the latest changes.
+- No model training or bulk historical download was performed. Local DATA-2 validation subsequently passed all 20 offline tests (see below).
 
 ## Minute precision decision — 2026-11-05
 
@@ -65,7 +65,7 @@ Build a public React + Python application that returns the **top five historical
 
 ### 2.0 Data preparation
 
-**Approved next implementation task — [CODEX-READY] DATA-2 (pilot-only preparation):** Implement WBS 2.1–2.6 using the existing locally cached pilot seasons; no bulk historical download, live API requests, model training, frontend, or deployment. Codex should implement importable, reusable Python functions for chronological player-game ordering; exclusion of all unresolved duplicate player/game groups; player career cumulative games, minutes, and available counting totals; approximately matched cumulative-minute checkpoints; per-36 and per-game feature calculations; explicit missing-statistic/era eligibility; and a concise data-quality summary. Keep raw JSON untouched and outputs derived/reproducible. Never convert missing stats to zero, never divide by zero, and exclude records/checkpoints with zero or invalid cumulative minutes from per-36 matching. Preserve whole-minute MIN precision as approved. For features with missing game values, track coverage and do not label partial sums as complete; define and document eligibility conservatively. Treat the three pilot seasons as **nonconsecutive samples**, not complete player careers: do not describe their combined cumulative totals as career totals or use cross-season pilot totals as career checkpoints. Support a season-scoped pilot demonstration and design the cumulative-career functions to operate on full chronological history once acquired. Add offline unit tests for sorting, duplicates, missingness, zero minutes, rates, checkpoints, and partial-history handling; use no live network calls. Codex may make routine implementation choices and document them, but must stop for consequential changes to approved matching methodology. Run the local test suite and report results. Mark 2.1–2.6 complete only to the extent implemented and tested, explicitly noting pilot-only scope.
+**Completed approved task — DATA-2 (pilot-only preparation):** Implement WBS 2.1–2.6 using the existing locally cached pilot seasons; no bulk historical download, live API requests, model training, frontend, or deployment. Codex should implement importable, reusable Python functions for chronological player-game ordering; exclusion of all unresolved duplicate player/game groups; player career cumulative games, minutes, and available counting totals; approximately matched cumulative-minute checkpoints; per-36 and per-game feature calculations; explicit missing-statistic/era eligibility; and a concise data-quality summary. Keep raw JSON untouched and outputs derived/reproducible. Never convert missing stats to zero, never divide by zero, and exclude records/checkpoints with zero or invalid cumulative minutes from per-36 matching. Preserve whole-minute MIN precision as approved. For features with missing game values, track coverage and do not label partial sums as complete; define and document eligibility conservatively. Treat the three pilot seasons as **nonconsecutive samples**, not complete player careers: do not describe their combined cumulative totals as career totals or use cross-season pilot totals as career checkpoints. Support a season-scoped pilot demonstration and design the cumulative-career functions to operate on full chronological history once acquired. Add offline unit tests for sorting, duplicates, missingness, zero minutes, rates, checkpoints, and partial-history handling; use no live network calls. Codex may make routine implementation choices and document them, but must stop for consequential changes to approved matching methodology. Run the local test suite and report results. Mark 2.1–2.6 complete only to the extent implemented and tested, explicitly noting pilot-only scope.
 
 - [x] **2.1** Clean and order regular-season game logs chronologically by player.
 - [x] **2.2** Calculate cumulative career games, minutes, and counting stats.
@@ -74,9 +74,23 @@ Build a public React + Python application that returns the **top five historical
 - [x] **2.5** Identify incomplete historical features and define fair comparison eligibility.
 - [x] **2.6** Add data-quality tests and summary report.
 
-**DATA-2 implementation:** Pilot-scoped functions, offline file runner and tests implemented for 2.1–2.6. Season totals/checkpoints are not career totals. Full-history functions require explicit complete-history confirmation; full historical acquisition remains open. Complete observed feature coverage is required for rates/eligibility; unresolved duplicate groups are excluded wholesale. All 20 offline tests passed with `UV_CACHE_DIR=/workspace/.cache/uv uv run --offline python -m unittest discover -s tests -v`. Actual MacBook pilot caches were unavailable here, so actual-season processing and quality counts remain pending local execution using the README command. No new data, training or similarity-methodology changes.
+**DATA-2 implementation and actual local validation: COMPLETE (2026-11-08).** WBS 2.1–2.6 is complete for the season-scoped pilot, including execution against the actual MacBook caches. This does not complete full-history acquisition or validate complete player careers.
 
-**Deliverable:** Reusable preparation implementation tested on offline fixtures; actual pilot-derived dataset pending local cache execution.
+| Season | Raw rows | Duplicate rows excluded | Invalid rows excluded | Derived rows | Positive usable-minute checkpoints | All-six-feature eligible checkpoints |
+|---|---:|---:|---:|---:|---:|---:|
+| 1946–47 | 6,508 | 2 | 0 | 6,506 | 0 | 0 |
+| 1977–78 | 17,768 | 4 | 0 | 17,764 | 17,733 | 2,043 |
+| 2024–25 | 26,306 | 0 | 0 | 26,306 | 26,305 | 26,305 |
+
+- Actual preparation command: `UV_CACHE_DIR=/private/tmp/ai-lab-uv-cache /Users/mj/.local/bin/uv run --offline python -m nba_player_similarity.preparation --data-dir data` (from the NBA project directory).
+- Validation: `UV_CACHE_DIR=/private/tmp/ai-lab-uv-cache /Users/mj/.local/bin/uv run --offline python -m unittest discover -s tests -v` — **20 tests passed, 0 failures**. Generated row counts were checked against the report; raw SHA-256 hashes matched before and after processing.
+- Outputs: local `data/derived/{season}.json` and `data/derived/quality.json`; all remain Git-ignored. No generated datasets are committed. No downloads, training, or methodology changes occurred.
+- 1946–47: all 6,506 retained checkpoints have zero cumulative minutes and cannot participate in per-36/minute matching. REB/STL/BLK/TOV are entirely unavailable; AST has 6,376 unusable observations after duplicate exclusion. Numeric zero minutes are not counted as missing by the report, so zero missing MIN does not establish usability.
+- 1977–78: retained unusable observations are AST 312, REB 74, STL 5,810, BLK 5,016, TOV 8,845; 31 checkpoints have zero cumulative minutes. Positive minutes alone do not imply complete feature eligibility.
+- 2024–25: no unusable observations in the seven metrics; one zero-minute checkpoint is ineligible. Accepted whole-minute source precision still applies.
+- These are three nonconsecutive season samples. Do not combine them into career histories or infer historical completeness from passing tests. Preserve missing values and exclude all unresolved duplicate groups; WBS **1.6 remains open**.
+
+**Deliverable:** Actual pilot-derived season datasets and quality report generated and inspected locally; preparation implementation verified with 20 offline tests.
 
 ### 3.0 Similarity baseline and model
 - [ ] **3.1** Implement transparent baseline comparison for reference.
@@ -88,6 +102,26 @@ Build a public React + Python application that returns the **top five historical
 - [ ] **3.7 DECISION GATE:** Seek approval before changing core matching logic or feature set.
 
 **Deliverable:** Reproducible local similarity engine and baseline evaluation.
+
+#### Proposed 2024–25 baseline implementation plan — awaiting approval
+
+Planning only: no similarity implementation, scaler fitting, or model execution has occurred. WBS 3.1–3.6 remains unchecked; this proposal is not tagged CODEX-READY.
+
+1. Read only the existing 2024–25 derived checkpoints. Require positive valid cumulative **season** minutes and complete coverage of PTS, AST, REB, STL, BLK and TOV. Default target: the selected player's latest eligible season checkpoint. Clearly label results as season-to-date comparisons, not historical career comparisons.
+2. For each other PLAYER_ID, use the existing checkpoint selector to select its nearest eligible season-minute checkpoint within the inclusive ±10% target window, breaking minute-distance ties by earliest date then game ID. Exclude the target player entirely. No cross-season matching or automatic window expansion.
+3. Standardize the six cumulative per-36 features with a fixed, documented reference scaler. Proposed reference: one latest eligible checkpoint per player in 2024–25, with population mean/standard deviation; each player contributes once. For zero-variance features use scale 1 so they contribute zero distance. Reuse the reference for every query and disclose that this is retrospective similarity, not predictive evaluation.
+4. Rank candidate checkpoints by Euclidean distance over the six z-scores, with equal feature weights. Return five distinct players when available; otherwise return fewer with a candidate-shortage explanation. Break equal-distance ties deterministically by PLAYER_ID. Retain an unstandardized per-36 distance as a diagnostic reference only; standardized distance controls ranking.
+5. Explain each result with both checkpoints' dates, games and minutes, minute difference/percentage, per-36 values, raw differences, standardized differences and each feature's squared-distance contribution. Show distance as distance, not a probability or similarity percentage; smaller means closer. Warn about low exposure and season-only scope.
+6. Add offline synthetic tests for scaling/reference consistency, equal weighting, zero variance, self-exclusion, distinct-player selection, ±10% boundaries, ties, missing/zero-minute exclusion, shortages and explanation reconciliation. Later run representative queries locally on existing derived data and document results/limitations before the WBS 4.4 review gate. Per-game mode remains a follow-up under 3.6; this first baseline uses per-36 only.
+
+**Proposed files once implementation is authorized:** `src/nba_player_similarity/similarity.py`, `tests/test_similarity.py`, project `README.md` and this `WORKPLAN.md`. Reuse `preparation.py`; change it only if a demonstrated interface issue requires it. No API, frontend, new data, shared framework, or committed derived outputs.
+
+**Decisions requiring approval before implementation:**
+
+- Approve the scaler reference/fitting strategy above (one latest eligible checkpoint per player; fixed across queries) and Euclidean distance as the specific equal-weight nearest-neighbor metric. These details were not previously fixed.
+- Exposure policy: recommend no additional minimum-games/minutes threshold for this diagnostic first baseline, beyond positive usable minutes and complete features, with explicit low-exposure warnings. A new threshold would change comparison eligibility and needs approval.
+- Confirm the proposed diagnostic behavior when fewer than five candidates qualify: return fewer, explain why, and retain the approved ±10% window. Do not pad or silently relax eligibility.
+- After those decisions, explicitly authorize implementation of this season-only first baseline. The broad approved approach remains per-36, standardized six features, equal weighting, minute matching, distinct players and interpretable explanations; full career-history support remains future work.
 
 ### 4.0 Validation and review
 - [ ] **4.1** Evaluate rookies, veterans, limited-minute players, and different eras.
