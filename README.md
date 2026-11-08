@@ -1,33 +1,17 @@
 # AI Lab
 
-A long-term, hands-on workspace for learning machine learning, generative AI, and AI engineering through practical projects.
+## What is AI Lab?
 
-## Structure
+A hands-on workspace for building and learning machine learning, generative AI, and AI engineering through practical projects.
 
-```text
-AI Lab/
-├── machine-learning/
-├── generative-ai/
-├── modules/
-├── README.md
-├── WORK_PLAN.md
-└── AGENTS.md
-```
+## Projects
 
-- **machine-learning/** — Traditional ML, model training, evaluation, prediction, and the ML lifecycle.
-- **generative-ai/** — LLMs, RAG, agents, MCP, local models served through tools such as LM Studio, and related experiments.
-- **modules/** — Reusable Python capabilities extracted from actual projects when there is a clear reason to share them.
-- **AGENTS.md** — Guidance for coding agents working in the lab.
-- **WORK_PLAN.md** — Lab-wide progress and a link to the active project plan.
+- [NBA Player Similarity](machine-learning/nba/) — Historical NBA player comparisons using statistical similarity. [Work plan](machine-learning/nba/WORKPLAN.md).
+- **Retail Machine Learning (planned)** — Customer churn prediction, with potential future work on customer acquisition cost (CAC) and customer lifetime value (CLV). May reuse the Retail Revenue Intelligence transaction dataset; CAC would require marketing and acquisition data. No implementation started.
 
-## How to work
+## Technologies
 
-Keep projects isolated and modular. Each project can manage its own dependencies and environment using `uv`. Keep project-specific code inside its project until reuse is justified.
-
-Build AI engineering experience across projects: introduce testing, APIs, model serving, MCP, Docker, deployment, observability, evaluation, and other practices as they become necessary. AI engineering does not have a separate folder.
-
-Prefer simple, replaceable components. Avoid tightly coupling projects, creating speculative infrastructure, or designing a large shared framework. Let the architecture evolve with experience and actual needs.
-
-## Getting started
-
-Start with [the lab work plan](WORK_PLAN.md). The active project is [NBA player similarity](machine-learning/nba/WORKPLAN.md). Let project requirements drive environments, dependencies, and engineering practices.
+- **Languages:** Python
+- **Machine learning:** Statistical feature engineering, nearest-neighbor similarity, predictive modeling (planned)
+- **Application development (planned):** React, Python API
+- **Development tools:** GitHub, Codex, `uv`
