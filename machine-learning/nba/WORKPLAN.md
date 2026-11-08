@@ -128,6 +128,10 @@ User explicitly approved the fixed latest-checkpoint scaler, equal-weight standa
 
 **Deliverable:** Season-scoped validation report; cross-era performance and comprehensive historical validation are not claimed.
 
+#### Completed targeted scaler sensitivity experiment — 2026-11-08
+
+User authorized an isolated experiment, not a production methodology change. Tested fixed scaler reference cutoffs of 0/50/100/250/500 minutes, retaining all query/candidate eligibility and the approved matching/scoring rules. Contributor counts: 569/523/496/442/375. Across 569 latest queries, mean top-five membership overlap with control was 5.000/4.510/4.408/4.316/4.202; candidate counts were unchanged. Representative Bronny/Curry/Jokić/Castle/Edwards outputs and time-sensitivity checks are in [SCALER_SENSITIVITY.md](SCALER_SENSITIVITY.md). Bronny’s early-to-final overlap did not improve; established-player changes were mixed. Scaler filtering affects weighting but is insufficient to stabilize low-minute query/candidate rates. **Recommendation: retain the approved production baseline**; no threshold is demonstrably best. An exposure-eligibility experiment is a separately approvable next investigation, not authorization to change eligibility. All 31 offline tests passed. Production similarity code, source caches and methodology are unchanged; experiment JSON remains local/ignored. WBS 4.4 still pending; full-history acquisition remains open.
+
 ### 5.0 Application development
 - [ ] **5.1** Design Python API (FastAPI candidate) for player search and similarity results.
 - [ ] **5.2** Build/test API with local model and stored data.
