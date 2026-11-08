@@ -162,17 +162,31 @@ static browser suite ran with FastAPI stopped and rejects runtime `/api/`
 requests; both modes, reference stats, explanations/warnings, search, retries,
 loading and empty states pass. Next.js build produces no dynamic routes.
 
-## Historical ingestion pilot (MacBook only)
+## Historical ingestion (HIST-1, MacBook only)
 
-The NBA Stats endpoint timed out in GitHub Codespaces. Run live ingestion from the MacBook, not CI:
+The existing `nba_api` LeagueGameLog implementation supports all **80 regular seasons, 1946–47 through 2025–26**. No playoffs, current-season inputs, model changes or historical comparability assumptions are added. Run from `machine-learning/nba/`.
+
+Read-only inventory (no optional NBA packages or network required):
 
 ```sh
-uv run --with nba_api --with pandas python -m nba_player_similarity.ingestion 1946-47 1977-78 2024-25
+uv run --offline python -m nba_player_similarity.ingestion
 ```
 
-This writes `data/raw/YYYY-YY.json` and `data/reports/YYYY-YY.json`. Raw JSON preserves missing historical statistics as `null`; no imputation is performed. The cache is reused on subsequent runs; use `--refresh` only to explicitly re-fetch a season. Each season is saved independently so interrupted runs can resume.
+Download the first five missing seasons locally, only when you choose to start acquisition:
 
-Reports include record counts, per-stat missingness, duplicate player/game pairs, missing IDs, invalid points and implausible minutes. Structural errors stop caching. A successful report is **not** proof of historical completeness: cross-check season totals and early minutes independently before building comparisons. The pilot does not automatically retrieve NBA history or authorize redistribution of NBA data.
+```sh
+uv run --with nba_api --with pandas python -m nba_player_similarity.ingestion --download --start-season 1946-47 --end-season 2025-26 --batch-size 5
+```
+
+Repeat the same command for the next batch. Existing caches are structurally revalidated before being skipped; report existence alone is never trusted. Current inventory selects 1947–48 through 1951–52 first. `--batch-size` limits attempted season fetches (default 5), not cached seasons. You can also list explicit seasons instead of a range. Without `--download`, every invocation is read-only.
+
+Each successful season is atomically saved to ignored `data/raw/YYYY-YY.json`; the next invocation resumes from those complete caches. An interrupted season is fetched again as a whole: the endpoint does not provide row-level resume. Three fetch attempts use bounded exponential backoff by default (`--attempts`, `--backoff`); `--delay` defaults to two seconds between seasons. Exhausted requests are recorded and the remaining selected seasons are attempted. Failed seasons remain missing and are retried on the next invocation. Missing optional packages fail immediately rather than retrying. Run one acquisition process at a time.
+
+Invalid existing caches are flagged and preserved, never silently downloaded over. Inspect the error before explicitly using `--refresh` with selected seasons. A refresh retains the original raw bytes under `data/raw/backups/` before replacing them, and rejected new data never replaces an old cache. `--data-dir` selects another local root.
+
+Per-season `data/reports/YYYY-YY.json` reports row counts, per-stat missing counts/percentages, duplicates/conflict rows, missing IDs, implausible minutes, invalid points and wrong-season records. Required columns are checked on every row. Null historical statistics and unresolved duplicates remain unchanged in raw records; duplicate exclusion remains a downstream preparation step. Structural warnings reject new caches; reports for those warnings are still written. Empty/malformed responses and fetch failures appear in unique `data/reports/batch-*.json` summaries, updated after every attempted season. On interruption, the last summary may be incomplete; raw caches are the resume authority. A per-season report describes the most recent validated/rejected payload, so inspect its source and warnings as well as the batch outcome.
+
+Passing structural validation **does not prove complete historical coverage**, reliable early minutes or cross-era comparability. Cross-check coverage before career preparation. HIST-1 implementation does not complete full-history acquisition, impute missing values, or authorize public redistribution. All raw/prepared data, backups and generated reports remain local and Git-ignored.
 
 Run offline tests:
 
@@ -221,14 +235,7 @@ for season in PILOT:
 PY
 ```
 
-The ingestion CLI reuses existing season files but fetches missing ones.
-Interrupted acquisition resumes by retaining completed season files; there is
-no partial-season resume. `--data-dir` selects another cache root. `--refresh`
-fetches again and replaces an existing raw file after validation, so preserve
-the original files before a user-authorized refresh. Reports are overwritten
-on a successful run; validation failures raise an error and may leave an older
-report in place. Inspect the error and raw records rather than treating that
-older report as evidence of a successful run.
+The HIST-1 CLI defaults to read-only inventory; add `--download` to fetch missing seasons. See the batch/resume and explicit refresh procedures above. The direct Python `ingest()` call used in the offline cache audit also reuses existing files; the assertion above prevents missing pilot files from initiating network access.
 
 ### Unresolved duplicate policy
 
@@ -256,7 +263,7 @@ ChatGPT. Before feature preparation, record the evidence and unresolved gaps:
   distinguish nulls from observed zeros for every statistic and era.
 - Review missing player/game IDs, dates and season assignments, negative or
   nonnumeric statistics, and minutes plausibility, including early-era minutes.
-  Current automated checks cover only required columns on the first record,
+  Current automated checks cover only required columns on every record,
   missing player/game IDs, minutes in 0–70, and nonnegative numeric points;
   they do not establish complete schema or historical correctness.
 - Inspect every repeated player/game group in raw data; retain unresolved

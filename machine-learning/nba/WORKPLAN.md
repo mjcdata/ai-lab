@@ -14,7 +14,7 @@
 - Reproducible local data preparation, provenance/coverage reporting, tests for checkpoint and era eligibility, exact result parity, and a successful local browser walkthrough are required. **Do not mark the MVP complete until the end-to-end 2026–27 → historical comparison works locally.**
 
 **Development sequence (current priority)**
-1. **HIST-1 — Full-history ingestion (next):** Extend existing resumable local ingestion to 1946–47 through 2025–26; inventory existing caches first, retrieve only missing approved seasons in controlled batches on the Mac, preserve raw data and missingness, and report per-season coverage/quality. Do not assume pilot samples constitute complete careers. Historical source approval already exists; do not repeat source selection. No cloud bulk ingestion or committing raw data.
+1. **HIST-1 — Full-history ingestion (implementation complete; acquisition open):** Extend existing resumable local ingestion to 1946–47 through 2025–26; inventory existing caches first, retrieve only missing approved seasons in controlled batches on the Mac, preserve raw data and missingness, and report per-season coverage/quality. Do not assume pilot samples constitute complete careers. Historical source approval already exists; do not repeat source selection. No cloud bulk ingestion or committing raw data.
 2. **HIST-2 — Career checkpoints:** Build chronological complete-career datasets from verified contiguous history; implement games and minutes checkpoint alignment with conservative exclusions for invalid minutes, duplicates, and partial features. Record historical eligibility by era.
 3. **HIST-3 — Era-aware similarity:** Define and review era normalization and shared-feature comparisons, then implement with tests and representative player comparisons. Preserve the existing 2024–25 baseline and avoid unapproved methodology changes.
 4. **CURR-1 — 2026–27 inputs:** Ingest and validate current-season regular-season logs locally; connect current-player selection to the historical reference pool, keeping current-season data out of historical candidates. Specify refresh process manually; **no scheduler**.
@@ -22,7 +22,7 @@
 
 **Explicitly deferred:** portfolio integration, Cloudflare/other public deployment, publication/licensing decision, automated/scheduled refresh, headshots, similarity percentages, predictive modeling, and unrelated fan features. The 2024–25 569-player / 1,138-result static implementation is a **validated prototype**, not the completed full-history MVP. Prior WBS 6.1–6.2 architecture work remains useful, but any earlier text implying that deployment or portfolio integration is the next step is superseded by this section. WBS 1.6 remains open until full-history acquisition and coverage review are done.
 
-**Next execution boundary:** Documentation update only in this change. HIST-1 implementation and downloads are separate follow-up work. Existing approval of nba_api as source does not authorize altering the approved matching methodology without the 3.7 decision gate.
+**Next execution boundary:** HIST-1 ingestion code is implemented and tested offline; no historical downloads have been run for this task. The user initiates controlled local acquisition next. Existing approval of nba_api as source does not authorize altering the approved matching methodology without the 3.7 decision gate.
 
 
 **Project:** AI Lab / Machine Learning / NBA  
@@ -251,3 +251,16 @@ The validated export contains 1,171 files; the largest asset is 242,212 bytes (w
 - Pause **only for consequential decisions** (data source, methodology, architecture, scope, paid services, public deployment); present options and a recommendation.
 - Do not treat a milestone boundary as an automatic approval checkpoint unless it includes a decision gate.
 - **Research WBS 1.1–1.5 is performed by the user with ChatGPT, not Codex. Manually initiate Codex only for approved implementation tasks tagged `[CODEX-READY]`; SETUP-1 is independently approved and does not require research or data access. Do not bulk-download historical data until 1.5 is approved.**
+
+
+## HIST-1 implementation — 2026-11-08
+
+- [x] Reuse existing nba_api regular-season fetcher for the inclusive 1946–47 through 2025–26 range (80 seasons).
+- [x] Read-only cache inventory, chronological batches (default five missing seasons), revalidation before skipping, and season-level interruption/resume.
+- [x] Bounded retries/backoff, between-season delay, per-season quality reports and independently saved batch failure/progress summaries. Explicit refresh preserves old raw bytes; invalid caches are never silently replaced. Missing statistics and duplicate raw records remain untouched.
+- [x] Offline tests for all range boundaries, batch limits, no-network/read-only planning, interrupted resume, transient and exhausted requests, corrupt caches, refresh preservation, all-row schema and wrong-season rejection.
+- [ ] Execute full historical acquisition locally and independently assess coverage (WBS 1.6 remains open). No download was performed for HIST-1 implementation.
+
+**Validation:** All 46 Python offline tests passed for this task (including six new historical batch tests). Read-only inventory revalidated existing 1946–47, 1977–78 and 2024–25 caches without failures, selecting 1947–48, 1948–49, 1949–50, 1950–51 and 1951–52 for the first five-season batch. There are 77 missing seasons total. Live endpoint availability, retries against the real service and full-history completeness remain untested. Existing httpx/Starlette test-transport deprecation warning persists. No model, frontend or dataset changes are included.
+
+**Next action:** User runs the README five-season `--download` command on the MacBook, inspects local per-season and batch quality reports, then repeats manually. Missing early statistics are not zero-filled; structural success is not cross-era suitability or career completeness. HIST-2/HIST-3 remain separate; no methodology decisions were reopened.
