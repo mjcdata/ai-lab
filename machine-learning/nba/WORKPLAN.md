@@ -1,5 +1,30 @@
 # NBA Player Similarity — Work Breakdown Structure (WBS)
 
+## Current MVP direction — supersedes earlier deployment-first sequencing (2026-11-08)
+
+**Product goal:** A locally accessible Next.js NBA Player Similarity application where a fan selects a player from the **2026–27 NBA regular season** and discovers up to five statistically closest historical NBA players, with understandable explanations of the similarities. This is **comparison, not prediction**.
+
+**MVP acceptance criteria**
+- Historical reference pool covers NBA regular-season history **1946–47 through 2025–26**, to the extent usable records exist. Report historical coverage and exclude or transparently flag ineligible early-era records; do not imply every season is fully comparable.
+- The **2026–27 season** supplies current player queries. Historical candidates must be drawn from prior seasons, without current-season leakage. Players who appeared historically and are active in 2026–27 require a clear self-exclusion policy.
+- Compare equivalent **career-stage checkpoints**, supporting games-played and cumulative-minutes modes. Do not compare a rookie's partial career against an entire veteran career by default. Document how incomplete careers, overlapping seasons, and checkpoint tolerances are handled.
+- Keep **standardized, equal-weight Euclidean distance** as the baseline; use per-36 statistics by default, preserve existing per-game support where appropriate. Era adjustments and feature-availability rules require explicit design and validation before modifying approved scoring logic (WBS 3.7).
+- Return up to five distinct historical comparisons, distances (not percentages), reference/candidate statistics, and human-readable reasons for each match. Handle missing features without filling them with zero, including early eras with zero/unreliable minutes.
+- The existing Next.js UI must run **locally**, with usable search and comparison results for real 2026–27 players. Precomputed, versioned static results are preferred where they can support the expanded scope; retain Python/FastAPI for development and parity checks. No public portfolio integration is needed for MVP completion.
+- Reproducible local data preparation, provenance/coverage reporting, tests for checkpoint and era eligibility, exact result parity, and a successful local browser walkthrough are required. **Do not mark the MVP complete until the end-to-end 2026–27 → historical comparison works locally.**
+
+**Development sequence (current priority)**
+1. **HIST-1 — Full-history ingestion (next):** Extend existing resumable local ingestion to 1946–47 through 2025–26; inventory existing caches first, retrieve only missing approved seasons in controlled batches on the Mac, preserve raw data and missingness, and report per-season coverage/quality. Do not assume pilot samples constitute complete careers. Historical source approval already exists; do not repeat source selection. No cloud bulk ingestion or committing raw data.
+2. **HIST-2 — Career checkpoints:** Build chronological complete-career datasets from verified contiguous history; implement games and minutes checkpoint alignment with conservative exclusions for invalid minutes, duplicates, and partial features. Record historical eligibility by era.
+3. **HIST-3 — Era-aware similarity:** Define and review era normalization and shared-feature comparisons, then implement with tests and representative player comparisons. Preserve the existing 2024–25 baseline and avoid unapproved methodology changes.
+4. **CURR-1 — 2026–27 inputs:** Ingest and validate current-season regular-season logs locally; connect current-player selection to the historical reference pool, keeping current-season data out of historical candidates. Specify refresh process manually; **no scheduler**.
+5. **APP-1 — Complete local MVP:** Extend existing snapshot generator, Next.js UI and/or local API as needed; preserve search, both exposure modes, explanations, warnings, and regression tests. Run locally and review real current-to-history results.
+
+**Explicitly deferred:** portfolio integration, Cloudflare/other public deployment, publication/licensing decision, automated/scheduled refresh, headshots, similarity percentages, predictive modeling, and unrelated fan features. The 2024–25 569-player / 1,138-result static implementation is a **validated prototype**, not the completed full-history MVP. Prior WBS 6.1–6.2 architecture work remains useful, but any earlier text implying that deployment or portfolio integration is the next step is superseded by this section. WBS 1.6 remains open until full-history acquisition and coverage review are done.
+
+**Next execution boundary:** Documentation update only in this change. HIST-1 implementation and downloads are separate follow-up work. Existing approval of nba_api as source does not authorize altering the approved matching methodology without the 3.7 decision gate.
+
+
 **Project:** AI Lab / Machine Learning / NBA  
 **Status:** Source approved; three-season pilot ingested; local DATA-2 preparation validated; season-scoped baseline implemented and locally exercised; 2024–25 baseline review complete; WBS 4.4 approved; local Next.js + FastAPI MVP implemented and tested
 **Execution:** User manually launches Codex for approved implementation tasks; user approves major decisions. GitHub Actions performs tests only.
