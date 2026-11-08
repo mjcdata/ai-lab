@@ -148,13 +148,61 @@ User authorized an isolated experiment, not a production methodology change. Tes
 **Local MVP completion — 2026-11-08:** Stopped the verified original NBA API PID 49595 and confirmed port 8000 was free before reorganization. Moved Python source/tests into `code/src` and `code/tests`, Next.js frontend into `code/frontend`, evaluation Markdown into `artifacts/`, and existing generated experiment JSON to `artifacts/scaler_experiment.json`. Updated uv module-root, docs, ignores and CI test path/dependency sync. Root README/WORKPLAN/Python config remain accessible; no unnecessary model directory or empty framework. All local data/output hashes preserved, core model/API source unchanged, direct API/model scores and UI example results verified. All **35 Python tests** and **6 desktop/mobile Playwright tests** pass; Next.js production build passes. Desktop/mobile screenshots visually inspected, with no horizontal overflow. No methodology changes, extra NBA downloads, paid services or deployment. Local server launch commands and URLs are in README. Full-history acquisition and WBS 6 deployment remain open.
 
 ### 6.0 Public deployment
-- [ ] **6.1** Compare hosting and data-serving architectures, costs, and operational requirements.
+- [x] **6.1** Deployment architecture research completed 2026-11-08; comparison, sizing evidence and recommendation below. Research only; no deployment or architecture implementation.
 - [ ] **6.2 DECISION GATE:** Obtain approval for hosting approach and any recurring costs.
 - [ ] **6.3** Deploy React frontend and Python API; validate production behavior.
 - [ ] **6.4** Link independent NBA app from existing portfolio.
 - [ ] **6.5** Document deployment, operations, and reproducibility.
 
 **Deliverable:** Publicly accessible NBA similarity app linked from portfolio.
+
+## WBS 6.1 deployment architecture research — 2026-11-08
+
+**Recommendation pending WBS 6.2:** Precompute the approved latest-checkpoint results for all 569 players in both modes locally; export Next.js as a static site and host the UI, small search index and per-player/mode JSON on Cloudflare Pages Free. Keep FastAPI/Python as the local development and reproducible computation path. A public runtime API, database, R2 bucket or serverless function is unnecessary for this fixed-season MVP. Do not implement this recommendation until approved.
+
+### Comparison and estimated monthly cost
+
+USD estimates for one low-traffic personal portfolio, before taxes, optional domain registration, usage overages or paid workspace features. Free tiers are conditional, not an uptime guarantee; recheck provider terms at deployment.
+
+| Factor | Existing Next.js + FastAPI | Precomputed static Next.js frontend |
+|---|---|---|
+| Indicative hosting | Vercel Hobby frontend + Render Python web service | Cloudflare Pages Free; Vercel Hobby static hosting is an alternative |
+| Monthly estimate | $0 with free backend but idle cold starts; roughly $7/month with smallest paid Python instance, or $25/month for 2 GB if memory requires it; frontend $0 only if Hobby-eligible. Two smallest Render services instead would start around $14/month, subject to sizing. | Expected $0/month for static hosting at this scale; no continuously running compute or database. Optional domain separate. |
+| First useful response | Frontend shell can be fast; search and comparisons depend on backend wake-up, parsing/loading data and scoring. Current proxy times out after 10 seconds, incompatible with an approximately one-minute sleeping-backend wake-up. Paid backend avoids idle sleep but remains a second service dependency. | CDN serves UI/search index and selected result file; no Python cold start. Initial JS still hydrates, and network/device latency still matters. Fetch only the chosen player/mode JSON, not the full snapshot. |
+| Maintenance | Two runtimes/deployments, backend URL configuration, health/logging, dependency patches, data packaging and backend memory sizing | One static deployment, Node build plus local Python export when model/data changes; add versioning/parity checks and coherent snapshot updates |
+| Functionality | Existing search, selection, six-stat explanations, exposure warnings and both modes already work | All current features preserved with a local searchable 569-player index and the existing response-shaped records for both modes; browser handles query filtering/pagination |
+| Flexibility | Easier to add arbitrary checkpoint queries or new data dynamically later | Limited to exported season, players, latest reference checkpoints, modes and current rules. Any new data/model/query capability needs regeneration or another architecture decision. This covers the current UI exactly. |
+| Storage | Must ship local ignored raw name source (17,315,654 bytes) and derived checkpoints (27,529,349 bytes), or equivalent approved deployment inputs. JSON expands in Python memory; 512 MB adequacy is not verified. Read-only files can be bundled; runtime-generated files on ephemeral disk are not durable. | Only names/search fields and finished comparison records need publication; raw logs and all checkpoint histories remain local. Static assets are publicly downloadable: results are not private simply because raw logs are omitted. |
+
+**Pricing/limits sources:** [Vercel pricing](https://vercel.com/pricing) lists Hobby $0 and Pro $20/month; [Hobby conditions](https://vercel.com/docs/plans/hobby) limit it to personal, non-commercial use, with usage caps. Verify portfolio eligibility rather than assume every commercial use qualifies. [Render pricing](https://render.com/pricing) lists smallest paid compute about $7/month (512 MB) and 2 GB about $25/month; [compute plans](https://render.com/docs/compute-plans) confirm plan sizing. These are starting estimates, not a verified capacity budget.
+
+[Render Free documentation](https://render.com/docs/free) specifies sleep after 15 idle minutes, roughly one-minute wake-up, 750 shared free instance hours/month, ephemeral files and bandwidth/build allowances. Free hosting is feasible for demos but a poor match for this API’s current 10-second proxy timeout; maintaining functionality would require a deployment-specific timeout/retry decision. No such change was made.
+
+[Cloudflare Pages pricing](https://developers.cloudflare.com/pages/functions/pricing/) states static requests are free and unlimited when no Functions run. [Pages limits](https://developers.cloudflare.com/pages/platform/limits/) list 20,000 files, 25 MiB per asset and 500 builds/month on Free, with a 20-minute build timeout. The measured split result assets fit comfortably; full frontend build assets also count and must be verified on export. A precomputed serverless lookup is possible, but adds function quotas and runtime configuration without an evident benefit here. The simplest choice is static assets only.
+
+### Local read-only sizing evidence
+
+Research computed response sizes in memory using the unchanged model and existing 2024–25 caches; no exporter, public asset tree or deploy configuration was implemented. Names were added as in the API; sizes include model fields, both checkpoint exposures, six-feature explanations, scaler metadata and model warnings. The API’s extra exposure-policy warning fields would add a small amount. No NBA data was downloaded.
+
+- 569 players × 2 modes = **1,138 result assets**; total compact JSON **15,770,664 bytes (15.04 MiB)**, before frontend assets.
+- Per-result size: min 10,508, median 14,078, max 14,431 bytes. Individual gzip median **3,785 bytes**, max 4,037 bytes; total individually gzipped results 4,120,948 bytes (3.93 MiB).
+- Search index of IDs, names, latest games/minutes/date: **53,620 bytes**, or **10,998 bytes gzipped**. Case-insensitive substring search and player selection can run entirely in the browser.
+- All scoring/serialization/compression took about **5.6 seconds on this Mac**. This is a local sizing measurement, not a cloud build-time or network benchmark. Gzip measurements assume the eventual host negotiates compression; wire bytes will vary.
+- Estimate only: 1,000 visits × 5 selected player/mode result requests ≈19 MB of gzipped result payload, plus index/UI assets. No initial full-snapshot download is needed. Cache effectiveness and actual usage were not measured.
+
+### Required adaptation after approval (not implemented)
+
+1. Generate response-compatible per-player/mode result JSON locally into ignored artifacts, plus a search index and manifest recording season, model/code version and source hashes. Validate all 1,138 records against direct model/API outputs; retain numeric precision and warnings. Publish a coherent immutable snapshot with the matching index/UI.
+2. Keep the Next.js UI and components. Replace the dynamic request-based `/api/[...path]` proxy with a static data loader and browser search, then enable `output: 'export'`. [Next.js static export documentation](https://nextjs.org/docs/app/guides/static-exports) explains that request-dependent route handlers/proxies are unsupported in static exports. The existing app cannot be deployed unchanged as a static site; UI behavior can remain the same after this narrow adaptation.
+3. Export HTML/CSS/JS and snapshot files together; verify asset count, file sizes, compression, error handling, both modes, reference stats and explanations. Avoid a monolithic initial JSON bundle. No client-side reimplementation of scoring is needed.
+4. Preserve local raw/prepared data and Python/FastAPI tests; only approved public result assets enter a deploy bundle. Since datasets are Git-ignored, a fresh GitHub/cloud build cannot regenerate them automatically: use a locally generated deploy bundle or an explicitly approved artifact-input process, not a live NBA download. No storage service or automated acquisition is required.
+5. Changes to season/data/methodology require a new snapshot and redeployment; the frozen 2024–25 scope makes this infrequent. Maintain rollback via versioned build artifacts, not a mutable runtime database.
+
+### WBS 6.2 — approval required; stop here
+
+Approve **precomputed results + static Next.js export + Cloudflare Pages Free** as the proposed architecture and a **$0 recurring hosting target**, with no paid upgrade, domain purchase or deployment yet. Approval to implement the export adapter is separate from approval to publish it. If retaining a live public API is a portfolio requirement, choose that explicitly and approve its hosting budget after memory sizing instead.
+
+The existing source-research decision also leaves **public redistribution/licensing review unresolved**. Public comparison JSON includes NBA-derived statistics. Neither precomputation nor an API establishes publication permission. Resolve/document that existing gate before public upload; architecture research makes no legal conclusion. WBS 6.2 remains unchecked, 6.3–6.5 remain unstarted. No infrastructure was registered, purchased or deployed, and no production model/UI code was changed.
 
 ## Future enhancements (not version 1)
 - Playoff comparisons.
