@@ -12,10 +12,93 @@ uv sync
 Run the lightweight import smoke test with Python's standard-library test runner:
 
 ```sh
-uv run python -m unittest discover -s tests -v
+uv run python -m unittest discover -s code/tests -v
 ```
 
-The package uses a `src/` layout. The season-scoped baseline is implemented; full career-history modeling remains future work.
+The package uses a `code/src/` layout. The season-scoped baseline is implemented; full career-history modeling remains future work.
+
+
+## Project layout and complete local application
+
+```text
+nba/
+├── code/
+│   ├── src/nba_player_similarity/   # Python preparation, model and API
+│   ├── tests/                      # Python offline tests
+│   └── frontend/                   # Next.js React app and browser tests
+├── data/                           # Local raw/derived caches and lineage reports (ignored)
+├── artifacts/                      # Tracked evaluation reports; ignored generated experiment/model outputs
+├── README.md
+├── WORKPLAN.md
+├── pyproject.toml
+└── uv.lock
+```
+
+Python package names/imports and the API contract are unchanged. `uv` now builds
+from `code/src`; test discovery uses `code/tests`. Existing raw/prepared caches
+and lineage reports remain in `data/`. The generated scaler sensitivity JSON
+moved to `artifacts/scaler_experiment.json` without changing its contents.
+Baseline/evaluation Markdown reports moved into `artifacts/` and remain tracked;
+future generated model/scaler binaries, screenshots and evaluation outputs there
+are ignored. There are no persisted trained model files to migrate.
+
+### Launch locally (two terminals)
+
+From `machine-learning/nba/`, terminal 1:
+
+```sh
+uv sync --locked
+uv run --offline uvicorn nba_player_similarity.api:app --host 127.0.0.1 --port 8000
+```
+
+Terminal 2, from `machine-learning/nba/code/frontend/` (Node >=20.9, pnpm):
+
+```sh
+pnpm install --frozen-lockfile
+pnpm build
+pnpm start
+```
+
+Open **http://127.0.0.1:3000**. API docs: **http://127.0.0.1:8000/docs**.
+For frontend iteration use `pnpm dev` instead of build/start. Stop either server
+with Ctrl+C. Nothing is deployed; both listeners bind to loopback.
+
+On this Mac, if `uv`, Node or pnpm are absent from PATH, use the existing bundled
+tools before the commands above:
+
+```sh
+export PATH="$HOME/.local/bin:$HOME/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$HOME/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:$PATH"
+```
+
+The Next.js server proxies only known read endpoints from `/api/` to
+`http://127.0.0.1:8000`. If the API uses another port, start Next.js with
+`NBA_API_URL=http://127.0.0.1:8001 pnpm start` (or `pnpm dev`). No CORS middleware,
+remote APIs, authentication service or paid integration is needed. The UI shows
+season scope, exposure and distance explanations. Search supports name/ID
+substring queries; refine the search if more than 25 players match.
+
+### Tests and verification
+
+```sh
+# NBA root, after uv sync:
+uv run --offline python -m unittest discover -s code/tests -v
+# Frontend directory, with both local servers running:
+pnpm exec playwright install chromium
+pnpm test
+```
+
+The first browser installation downloads test tooling, not NBA data. For this
+session the test browser was stored in `/private/tmp/nba-playwright`; set
+`PLAYWRIGHT_BROWSERS_PATH=/private/tmp/nba-playwright` to reuse it.
+Six Playwright cases cover desktop (1440px) and mobile (390px): live player
+search, five comparisons, all six stats, explanation expansion, both modes,
+no horizontal overflow, loading, no search matches, API errors/retry and an
+empty-comparison fixture. Loading/error/empty cases are controlled mocks;
+normal scoring flows use the actual local API. Python API tests use fixtures.
+Next.js production build and all 35 Python tests pass. Dataset/output SHA-256
+hashes and moved model/API source were checked unchanged. Next.js/React and
+Playwright versions are pinned in the frontend lockfile. Model/scaler methodology
+and datasets have not changed. Deployment and public data licensing remain open.
 
 ## Historical ingestion pilot (MacBook only)
 
@@ -32,7 +115,7 @@ Reports include record counts, per-stat missingness, duplicate player/game pairs
 Run offline tests:
 
 ```sh
-uv run python -m unittest discover -s tests -v
+uv run python -m unittest discover -s code/tests -v
 ```
 
 Local `data/` is ignored by Git.
@@ -133,7 +216,7 @@ From this directory, with the three existing MacBook caches present:
 
 ```sh
 uv run --offline python -m nba_player_similarity.preparation --data-dir data
-uv run --offline python -m unittest discover -s tests -v
+uv run --offline python -m unittest discover -s code/tests -v
 ```
 
 Preparation has no fetch fallback. It requires all three nonempty raw caches,
@@ -206,7 +289,7 @@ This is retrospective season-to-date similarity, not career matching or
 predictive evaluation. The end-of-season scaler is not a leakage-free predictive
 benchmark. No early-era samples are included. Shooting efficiency and position
 are outside the six-feature model: results are not complete style/quality
-judgments. See [local representative results](BASELINE_RESULTS.md).
+judgments. See [local representative results](artifacts/BASELINE_RESULTS.md).
 
 ## Local FastAPI service (WBS 5.1–5.2)
 
@@ -252,7 +335,7 @@ No frontend, database, data download, authentication, or deployment is included.
 Use loopback only for this local development service.
 
 ```sh
-uv run --offline python -m unittest discover -s tests -v
+uv run --offline python -m unittest discover -s code/tests -v
 ```
 
 Offline API tests use temporary fixtures and FastAPI's in-process TestClient:

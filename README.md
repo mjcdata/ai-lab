@@ -13,5 +13,5 @@ A hands-on workspace for building and learning machine learning, generative AI, 
 
 - **Languages:** Python
 - **Machine learning:** Statistical feature engineering, nearest-neighbor similarity, predictive modeling (planned)
-- **Application development (planned):** React, Python API
+- **Application development:** Next.js / React, FastAPI Python API
 - **Development tools:** GitHub, Codex, `uv`

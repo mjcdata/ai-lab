@@ -8,7 +8,7 @@ Reproduce from the NBA directory:
 
 ```sh
 uv run --offline python -m nba_player_similarity.scaler_experiment
-uv run --offline python -m unittest discover -s tests -v
+uv run --offline python -m unittest discover -s code/tests -v
 ```
 
 The experiment reuses approved checkpoint selection/scoring and retains even low-minute players as queries/candidates. It does not change production defaults. Three new offline tests verify exact zero-cutoff control equivalence, inclusive fitting cutoffs, unchanged candidates/control/input, empty reference handling and constant-feature behavior. All **31 offline tests passed**. Candidate counts remained identical for all 569 queries at every cutoff.

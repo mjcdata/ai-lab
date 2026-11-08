@@ -74,9 +74,10 @@ def run(checkpoints, examples=EXAMPLES):
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--checkpoints',type=Path,default=Path('data/derived/2024-25.json'))
-    parser.add_argument('--output',type=Path,default=Path('data/derived/scaler_experiment.json'))
+    parser.add_argument('--output',type=Path,default=Path('artifacts/scaler_experiment.json'))
     args=parser.parse_args()
     output=run(json.loads(args.checkpoints.read_text()))
+    args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(output,indent=2,allow_nan=False)+'\n')
     print(f'Wrote isolated experiment results to {args.output}')
 

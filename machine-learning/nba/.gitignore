@@ -3,3 +3,12 @@ __pycache__/
 *.py[cod]
 dist/
 data/
+artifacts/*
+!artifacts/*.md
+code/frontend/node_modules/
+code/frontend/.next/
+code/frontend/out/
+code/frontend/test-results/
+code/frontend/playwright-report/
+code/frontend/.env*
+!code/frontend/.env.example
