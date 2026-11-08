@@ -15,7 +15,7 @@ Run the lightweight import smoke test with Python's standard-library test runner
 uv run python -m unittest discover -s tests -v
 ```
 
-The package uses a `src/` layout. The similarity methodology is not implemented yet.
+The package uses a `src/` layout. The season-scoped baseline is implemented; full career-history modeling remains future work.
 
 ## Historical ingestion pilot (MacBook only)
 
@@ -176,3 +176,34 @@ three-season file processing, reproducibility and byte-for-byte raw preservation
 The actual MacBook pilot caches were not present in the cloud checkout; no actual
 pilot quality counts or processed dataset are claimed. Run the command above
 locally to obtain them. No data acquisition or model training is part of DATA-2.
+
+## Season-scoped similarity baseline
+
+From this project directory, run against existing derived data:
+
+```sh
+uv run --offline python -m nba_player_similarity.similarity 1630162
+uv run --offline python -m nba_player_similarity.similarity 1630162 --mode per_game
+```
+
+Default: six per-36 features (PTS/AST/REB/STL/BLK/TOV), fixed population z-score
+scaler using one latest eligible checkpoint per player, equal-weight Euclidean
+distance. Zero-variance scales are 1. Each query uses the selected player's
+latest eligible checkpoint; each other player contributes its nearest eligible
+checkpoint within inclusive ±10% cumulative season minutes, before scoring.
+Minute ties use earliest date/game; distance ties use PLAYER_ID. Return five
+unique other players, or fewer with a shortage explanation; never widen the
+window. Per-game mode is separately standardized and remains optional.
+
+Output includes dates, games/minutes, minute differences, feature values,
+z-scores, differences and squared-distance contributions. These contributions
+sum to squared distance. Smaller distance means closer, not a probability.
+Raw distance is diagnostic only. Complete feature coverage and positive usable
+minutes are required; missing or invalid values are never filled with zero.
+All queries warn about low-exposure instability; no extra exposure cutoff applies.
+
+This is retrospective season-to-date similarity, not career matching or
+predictive evaluation. The end-of-season scaler is not a leakage-free predictive
+benchmark. No early-era samples are included. Shooting efficiency and position
+are outside the six-feature model: results are not complete style/quality
+judgments. See [local representative results](BASELINE_RESULTS.md).

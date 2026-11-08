@@ -1,7 +1,7 @@
 # NBA Player Similarity — Work Breakdown Structure (WBS)
 
 **Project:** AI Lab / Machine Learning / NBA  
-**Status:** Source approved; three-season pilot ingested; local DATA-2 preparation validated; season-scoped baseline planning pending approval
+**Status:** Source approved; three-season pilot ingested; local DATA-2 preparation validated; season-scoped baseline implemented and locally exercised; results review next
 **Execution:** User manually launches Codex for approved implementation tasks; user approves major decisions. GitHub Actions performs tests only.
 
 ## Goal and scope
@@ -93,35 +93,30 @@ Build a public React + Python application that returns the **top five historical
 **Deliverable:** Actual pilot-derived season datasets and quality report generated and inspected locally; preparation implementation verified with 20 offline tests.
 
 ### 3.0 Similarity baseline and model
-- [ ] **3.1** Implement transparent baseline comparison for reference.
-- [ ] **3.2** Standardize six features using a documented fitting strategy.
-- [ ] **3.3** Implement equal-weight nearest-neighbor similarity with initial ±10% cumulative-minute eligibility.
-- [ ] **3.4** Exclude self-matches; select one relevant checkpoint per historical player; return five distinct players.
-- [ ] **3.5** Produce interpretable scores and feature-level comparison explanations; avoid misleading percentage-like scores.
-- [ ] **3.6** Test per-36 default and per-game alternative.
+- [x] **3.1** Implement transparent baseline comparison for reference.
+- [x] **3.2** Standardize six features using a documented fitting strategy.
+- [x] **3.3** Implement equal-weight nearest-neighbor similarity with initial ±10% cumulative-minute eligibility.
+- [x] **3.4** Exclude self-matches; select one relevant checkpoint per historical player; return five distinct players.
+- [x] **3.5** Produce interpretable scores and feature-level comparison explanations; avoid misleading percentage-like scores.
+- [x] **3.6** Test per-36 default and per-game alternative.
 - [ ] **3.7 DECISION GATE:** Seek approval before changing core matching logic or feature set.
 
 **Deliverable:** Reproducible local similarity engine and baseline evaluation.
 
-#### Proposed 2024–25 baseline implementation plan — awaiting approval
+#### Approved 2024–25 baseline implementation plan — implemented
 
-Planning only: no similarity implementation, scaler fitting, or model execution has occurred. WBS 3.1–3.6 remains unchecked; this proposal is not tagged CODEX-READY.
+User explicitly approved the fixed latest-checkpoint scaler, equal-weight standardized Euclidean metric, no additional exposure threshold, and fewer-than-five behavior on 2026-11-08. Implementation and local execution are complete. Per-36 is default; per-game diagnostic mode is also tested.
 
 1. Read only the existing 2024–25 derived checkpoints. Require positive valid cumulative **season** minutes and complete coverage of PTS, AST, REB, STL, BLK and TOV. Default target: the selected player's latest eligible season checkpoint. Clearly label results as season-to-date comparisons, not historical career comparisons.
 2. For each other PLAYER_ID, use the existing checkpoint selector to select its nearest eligible season-minute checkpoint within the inclusive ±10% target window, breaking minute-distance ties by earliest date then game ID. Exclude the target player entirely. No cross-season matching or automatic window expansion.
 3. Standardize the six cumulative per-36 features with a fixed, documented reference scaler. Proposed reference: one latest eligible checkpoint per player in 2024–25, with population mean/standard deviation; each player contributes once. For zero-variance features use scale 1 so they contribute zero distance. Reuse the reference for every query and disclose that this is retrospective similarity, not predictive evaluation.
 4. Rank candidate checkpoints by Euclidean distance over the six z-scores, with equal feature weights. Return five distinct players when available; otherwise return fewer with a candidate-shortage explanation. Break equal-distance ties deterministically by PLAYER_ID. Retain an unstandardized per-36 distance as a diagnostic reference only; standardized distance controls ranking.
 5. Explain each result with both checkpoints' dates, games and minutes, minute difference/percentage, per-36 values, raw differences, standardized differences and each feature's squared-distance contribution. Show distance as distance, not a probability or similarity percentage; smaller means closer. Warn about low exposure and season-only scope.
-6. Add offline synthetic tests for scaling/reference consistency, equal weighting, zero variance, self-exclusion, distinct-player selection, ±10% boundaries, ties, missing/zero-minute exclusion, shortages and explanation reconciliation. Later run representative queries locally on existing derived data and document results/limitations before the WBS 4.4 review gate. Per-game mode remains a follow-up under 3.6; this first baseline uses per-36 only.
+6. Add offline synthetic tests for scaling/reference consistency, equal weighting, zero variance, self-exclusion, distinct-player selection, ±10% boundaries, ties, missing/zero-minute exclusion, shortages and explanation reconciliation. Later run representative queries locally on existing derived data and document results/limitations before the WBS 4.4 review gate. Per-game alternative is implemented and tested under 3.6; representative local results use the per-36 default.
 
 **Proposed files once implementation is authorized:** `src/nba_player_similarity/similarity.py`, `tests/test_similarity.py`, project `README.md` and this `WORKPLAN.md`. Reuse `preparation.py`; change it only if a demonstrated interface issue requires it. No API, frontend, new data, shared framework, or committed derived outputs.
 
-**Decisions requiring approval before implementation:**
-
-- Approve the scaler reference/fitting strategy above (one latest eligible checkpoint per player; fixed across queries) and Euclidean distance as the specific equal-weight nearest-neighbor metric. These details were not previously fixed.
-- Exposure policy: recommend no additional minimum-games/minutes threshold for this diagnostic first baseline, beyond positive usable minutes and complete features, with explicit low-exposure warnings. A new threshold would change comparison eligibility and needs approval.
-- Confirm the proposed diagnostic behavior when fewer than five candidates qualify: return fewer, explain why, and retain the approved ±10% window. Do not pad or silently relax eligibility.
-- After those decisions, explicitly authorize implementation of this season-only first baseline. The broad approved approach remains per-36, standardized six features, equal weighting, minute matching, distinct players and interpretable explanations; full career-history support remains future work.
+**Completion — 2026-11-08:** Implemented `similarity.py`, offline tests and CLI. The local fixed scaler uses 569 players; five representative queries (Anthony Edwards, Nikola Jokić, Alperen Sengun, Stephen Curry, LeBron James) each returned five distinct comparisons within the unchanged window. Full scores, exposures and feature explanations are in [BASELINE_RESULTS.md](BASELINE_RESULTS.md). All 28 offline tests passed. No additional data, frontend or deployment. Generated caches remain untracked. WBS 3.1–3.6 complete for the season-scoped baseline only; WBS 1.6 remains open. Representative runs are observations, not completion of all WBS 4 evaluation tasks. No unresolved baseline methodology approval remains; user review at 4.4 is still required before application build.
 
 ### 4.0 Validation and review
 - [ ] **4.1** Evaluate rookies, veterans, limited-minute players, and different eras.
