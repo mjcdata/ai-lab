@@ -73,6 +73,17 @@ export function ComparisonResults({
               </span>
               <span>Through {result.reference.GAME_DATE}</span>
             </div>
+            <p className="reference-stats-label" id="reference-stats-label">
+              {mode === "per36" ? "Per-36 statistics" : "Per-game statistics"}
+            </p>
+            <dl className="reference-stats" aria-labelledby="reference-stats-label">
+              {["PTS", "AST", "REB", "STL", "BLK", "TOV"].map((stat) => (
+                <div key={stat}>
+                  <dt>{stat}</dt>
+                  <dd>{fmt(result.reference[mode][stat], 2)}</dd>
+                </div>
+              ))}
+            </dl>
           </div>
           <div className="summary">
             <span>

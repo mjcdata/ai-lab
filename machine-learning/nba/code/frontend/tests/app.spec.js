@@ -53,3 +53,36 @@ test('comparison loading, failure, recovery and empty candidates',async({page})=
  await page.getByRole('button',{name:'Per game',exact:true}).click();
  await expect(page.getByRole('heading',{name:'No eligible comparisons'})).toBeVisible();
 });
+
+
+test('reference statistics match API values in both modes and fit the viewport', async ({ page }) => {
+  await page.goto('/');
+  await page.getByLabel('Search the 2024–25 roster').fill('Curry');
+  await page.getByRole('button', { name: /Stephen Curry/ }).click();
+  for (const [mode, button, label] of [
+    ['per36', 'Per 36 min', 'Per-36 statistics'],
+    ['per_game', 'Per game', 'Per-game statistics'],
+  ]) {
+    await page.getByRole('button', { name: button, exact: true }).click();
+    await expect(page.locator('.reference-stats-label')).toHaveText(label);
+    const response = await page.request.get(`/api/players/201939/comparisons?mode=${mode}`);
+    expect(response.ok()).toBeTruthy();
+    const data = await response.json();
+    const cells = page.locator('.reference-stats > div');
+    await expect(cells).toHaveCount(6);
+    for (const [index, stat] of ['PTS', 'AST', 'REB', 'STL', 'BLK', 'TOV'].entries()) {
+      await expect(cells.nth(index).locator('dt')).toHaveText(stat);
+      const expected = data.reference[mode][stat].toLocaleString('en-US', {
+        maximumFractionDigits: 2, minimumFractionDigits: 2,
+      });
+      await expect(cells.nth(index).locator('dd')).toHaveText(expected);
+      // Reference values must also agree with comparison explanations.
+      expect(data.comparisons[0].features[stat].reference).toBe(data.reference[mode][stat]);
+    }
+    expect(await page.locator('.reference-stats').evaluate(grid => {
+      const bounds = grid.getBoundingClientRect();
+      return bounds.left >= 0 && bounds.right <= window.innerWidth &&
+        [...grid.children].every(cell => cell.scrollWidth <= cell.clientWidth);
+    })).toBeTruthy();
+  }
+});
