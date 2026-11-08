@@ -1,3 +1,5 @@
+> **Current MVP scope (2026-11-08):** Build and validate a **local Next.js** NBA Player Similarity app comparing **2026–27 players** against eligible historical NBA regular-season player checkpoints from **1946–47 through 2025–26**. The existing 2024–25 static app is a tested **prototype**, not the finished MVP. Next priorities: complete local historical ingestion, build comparable career checkpoints with era/missing-data handling, ingest 2026–27 inputs, and serve real historical comparisons locally. Use standardized Euclidean distance as the baseline; **no predictive modeling**. Portfolio integration, public deployment, scheduling/automation, headshots and similarity percentages are deferred. See [the updated MVP plan](WORKPLAN.md#current-mvp-direction--supersedes-earlier-deployment-first-sequencing-2026-11-08). Existing commands below document the prototype until the new pipeline is implemented.
+
 # NBA player similarity
 
 Minimal Python project for the [project work plan](WORKPLAN.md).
