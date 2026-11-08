@@ -3,6 +3,9 @@ import { test, expect } from '@playwright/test';
 test('live search, comparisons, explanations and both modes', async ({ page }) => {
   const errors=[]; page.on('pageerror',e=>errors.push(e.message));
   await page.goto('/');
+  await expect(page).toHaveTitle('NBA Player Similarity');
+  await expect(page.getByRole('heading', {level:1})).toHaveText('NBA Player Similarity');
+  await expect(page.locator('.brand')).toContainText('NBA Player Similarity');
   await expect(page.getByRole('heading', {name:'Every player has a neighborhood.'})).toBeVisible();
   await page.getByLabel('Search the 2024–25 roster').fill('Curry');
   await page.getByRole('button',{name:/Stephen Curry/}).click();
