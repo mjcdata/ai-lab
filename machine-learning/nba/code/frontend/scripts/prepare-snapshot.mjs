@@ -12,12 +12,12 @@ export async function prepareSnapshot(source, publicDir) {
   const manifestBytes = await readFile(join(release, 'manifest.json'));
   if (hash(manifestBytes) !== current.manifest_sha256) throw new Error('Manifest checksum mismatch');
   const manifest = JSON.parse(manifestBytes);
-  if (manifest.schema_version !== 1 || manifest.snapshot_id !== current.snapshot_id || manifest.season !== '2024-25') throw new Error('Unsupported snapshot');
+  if (manifest.schema_version !== 2 || manifest.snapshot_id !== current.snapshot_id || manifest.season !== '2026-27') throw new Error('Unsupported snapshot');
   const players = JSON.parse(await readFile(join(release, 'players.json')));
   const expected = ['players.json', ...manifest.modes.flatMap(mode => players.map(p => `results/${mode}/${p.player_id}.json`))];
-  if (manifest.player_count !== players.length || manifest.result_count !== players.length * 2 || manifest.modes.join(',') !== 'per36,per_game' || expected.length !== Object.keys(manifest.files).length) throw new Error('Incomplete snapshot inventory');
+  if (manifest.player_count !== players.length || manifest.result_count !== players.length || manifest.modes.join(',') !== 'per36' || expected.length !== Object.keys(manifest.files).length) throw new Error('Incomplete snapshot inventory');
   for (const relative of expected) {
-    if (!/^(players\.json|results\/(per36|per_game)\/\d+\.json)$/.test(relative)) throw new Error('Invalid snapshot path');
+    if (!/^(players\.json|results\/(per36)\/\d+\.json)$/.test(relative)) throw new Error('Invalid snapshot path');
     const bytes = await readFile(join(release, relative));
     const info = manifest.files[relative];
     if (!info || bytes.length !== info.bytes || hash(bytes) !== info.sha256) throw new Error(`Snapshot checksum mismatch: ${relative}`);

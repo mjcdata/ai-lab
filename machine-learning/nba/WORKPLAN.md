@@ -1,5 +1,26 @@
 # NBA Player Similarity — Work Breakdown Structure (WBS)
 
+## Approved season-based direction — supersedes career-checkpoint requirements (2026-11-08)
+
+User explicitly replaced career-stage matching with **2026–27 current player-season → historical player-season** similarity. Use per-36 only and within-season population Z-scores, then equal-weight Euclidean distance on PTS, REB, AST, STL, BLK, TOV. No career-stage or minute-window matching and no per-game UI/API option. No arbitrary games/minutes threshold. Incomplete or unreliable profiles are excluded and reported; no zero imputation. Up to five distinct player-season matches may repeat a historical player across seasons; own-player prior seasons are excluded. The older career, minute-window, per-game and deployment-first plan sections below are historical records, not current requirements.
+
+- [x] HIST-1: All 80 historical regular seasons through 2025–26 acquired and structurally revalidated; 0 missing, 0 unresolved download failures. Original raw caches preserved. Coverage completeness remains a limitation, not proof from file presence.
+- [x] Current 2026–27 availability checked and 3,171 raw rows through November 8 cached locally using existing nba_api implementation.
+- [x] Season-profile aggregation and own-season population Z-scores implemented; reliability exclusions documented by player-season. No career preparation implemented.
+- [x] Current-to-history top-five scoring and per-stat raw/Z explanation output; no exposure matching.
+- [x] Local API, immutable static snapshot schema v2 and Next.js UI updated to per-36 only, with historical season labels and exposure warnings.
+- [x] Offline unit/API/snapshot tests, static build and real-source parity validation. All 8 desktop/mobile browser cases passed after explicit asynchronous render waits.
+- [ ] Independent historical game-coverage review and user walkthrough of the new local app. Public deployment and automation remain deferred.
+
+**Local findings:** 26,196 observed player-seasons across 81 seasons; 19,591 eligible (19,134 historical + 457 current), 6,605 excluded. Current source has 460 players, of whom 3 are excluded. Reason counts overlap: 6,309 missing/invalid statistics; 854 nonpositive total minutes; 4,552 positive statistics attached to zero minutes; 13 player-seasons with unresolved duplicate games. No complete usable six-stat profiles before 1977–78. See ignored `data/reports/season-profiles.json` for exact season/player reasons and scalers. No imputation, altered raw data, fitted predictive model, public upload or recurring automation.
+
+**Examples:** Curry → McGrady 2003–04 (0.610), Beal 2020–21 (0.706), Jordan 1996–97 (0.708), Jordan 1997–98 (0.750), Bryant 2006–07 (0.784). Jokić → Grant Hill 1996–97 (0.687) illustrates statistical rather than role/ability similarity. Bronny James has 12 current minutes; no arbitrary cutoff excludes him, but the results remain exploratory.
+
+**Reliability policy:** Require complete valid values for all six counts and minutes across the player-season, positive total minutes, valid dates and no duplicate player/game ambiguity. Reject a player-season containing positive six-stat counts with recorded zero minutes. Preserve all raw records and nulls. Tiny positive exposures remain eligible with warnings. Complete-case season fitting can introduce missingness bias; per-season normalization does not fully resolve era differences. Constant features receive Z=0 and are reported.
+
+**Validation for this change:** 51 Python tests, 4 Node loader/staging tests and all 8 desktop/mobile browser cases passed; static production export succeeded. Five actual current-player API payloads exactly matched generated snapshots, and all 81 raw source hashes were unchanged. Historical prototype regression tests remain as archived reproducibility checks.
+
+
 ## Current MVP direction — supersedes earlier deployment-first sequencing (2026-11-08)
 
 **Product goal:** A locally accessible Next.js NBA Player Similarity application where a fan selects a player from the **2026–27 NBA regular season** and discovers up to five statistically closest historical NBA players, with understandable explanations of the similarities. This is **comparison, not prediction**.

@@ -26,8 +26,8 @@ PILOT = ("1946-47", "1977-78", "2024-25")
 def validate_season(season: str) -> str:
     if not SEASON_RE.fullmatch(season) or int(season[-2:]) != (int(season[:4]) + 1) % 100:
         raise ValueError(f"Invalid NBA season: {season!r}; expected YYYY-YY")
-    if not 1946 <= int(season[:4]) <= 2025:
-        raise ValueError("Supported historical seasons: 1946-47 through 2025-26")
+    if not 1946 <= int(season[:4]) <= 2026:
+        raise ValueError("Supported seasons: 1946-47 through 2026-27 (history defaults through 2025-26)")
     return season
 
 

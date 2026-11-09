@@ -21,6 +21,7 @@ def row(player=1, game="001", **changes):
 class IngestionTests(unittest.TestCase):
     def test_season_validation(self):
         self.assertEqual(validate_season("1946-47"), "1946-47")
+        self.assertEqual(validate_season("2026-27"), "2026-27")
         with self.assertRaises(ValueError):
             validate_season("2024-26")
 
@@ -104,7 +105,7 @@ class HistoricalBatchTests(unittest.TestCase):
     def test_range_and_bounds(self):
         self.assertEqual((len(season_range()), season_range()[0], season_range()[-1]),
                          (80, "1946-47", "2025-26"))
-        for season in ("1945-46", "2026-27", "1999-01"):
+        for season in ("1945-46", "2027-28", "1999-01"):
             with self.assertRaises(ValueError):
                 validate_season(season)
         with self.assertRaises(ValueError):

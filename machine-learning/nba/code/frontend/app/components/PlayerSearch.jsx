@@ -16,7 +16,7 @@ export function PlayerSearch({
         <span>01 / SELECT A PLAYER</span>
         <span>↗</span>
       </div>
-      <label htmlFor="search">Search the 2024–25 roster</label>
+      <label htmlFor="search">Search the 2026–27 roster</label>
       <div className="search-box">
         <span aria-hidden="true">⌕</span>
         <input

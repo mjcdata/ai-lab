@@ -4,7 +4,6 @@ import { ComparisonCard } from "./ComparisonCard";
 export function ComparisonResults({
   selected,
   mode,
-  onModeChange,
   result,
   loading,
   error,
@@ -14,20 +13,7 @@ export function ComparisonResults({
     <section className="results" aria-live="polite" aria-busy={loading}>
       <div className="results-heading">
         <span className="section-label">02 / EXPLORE THE COMPARISONS</span>
-        <div className="modes" role="group" aria-label="Statistics mode">
-          <button
-            aria-pressed={mode === "per36"}
-            onClick={() => onModeChange("per36")}
-          >
-            Per 36 min
-          </button>
-          <button
-            aria-pressed={mode === "per_game"}
-            onClick={() => onModeChange("per_game")}
-          >
-            Per game
-          </button>
-        </div>
+        <span className="distance-key">PER 36 MINUTES</span>
       </div>
       {!selected && (
         <div className="empty">
@@ -46,7 +32,7 @@ export function ComparisonResults({
         <div className="empty">
           <div className="spinner" />
           <h2>Finding statistical neighbors…</h2>
-          <p>Matching season minutes and comparing six features.</p>
+          <p>Comparing season-relative six-stat profiles.</p>
         </div>
       )}
       {error && (
@@ -74,7 +60,7 @@ export function ComparisonResults({
               <span>Through {result.reference.GAME_DATE}</span>
             </div>
             <p className="reference-stats-label" id="reference-stats-label">
-              {mode === "per36" ? "Per-36 statistics" : "Per-game statistics"}
+              Per-36 statistics
             </p>
             <dl className="reference-stats" aria-labelledby="reference-stats-label">
               {["PTS", "AST", "REB", "STL", "BLK", "TOV"].map((stat) => (
@@ -88,7 +74,7 @@ export function ComparisonResults({
           <div className="summary">
             <span>
               {result.comparisons.length} closest comparisons{" "}
-              <small>from {result.candidate_count} eligible players</small>
+              <small>from {result.candidate_count} eligible historical player-seasons</small>
             </span>
             <span className="distance-key">LOWER DISTANCE = CLOSER</span>
           </div>
@@ -96,15 +82,14 @@ export function ComparisonResults({
             <div className="error">
               <h3>No eligible comparisons</h3>
               <p>
-                No other players qualify within the fixed ±10% minute window.
-                The window has not been widened.
+                No eligible historical player-seasons have complete, reliable six-stat per-36 profiles.
               </p>
             </div>
           )}
           <div className="cards">
             {result.comparisons.map((comparison, index) => (
               <ComparisonCard
-                key={comparison.player_id}
+                key={`${comparison.player_id}-${comparison.season}`}
                 c={comparison}
                 i={index}
                 mode={mode}
@@ -114,6 +99,7 @@ export function ComparisonResults({
           </div>
           <div className="warnings">
             <h3>Read the numbers with context.</h3>
+            <p>{result.coverage?.excluded_player_seasons} player-seasons excluded for incomplete statistics, unreliable minutes or unresolved duplicate games.</p>
             {result.warnings.map((w, i) => (
               <p key={i}>{w}</p>
             ))}

@@ -4,8 +4,6 @@ import tempfile
 import unittest
 from nba_player_similarity.snapshot import generate
 from nba_player_similarity.responses import comparison_response
-from fastapi.testclient import TestClient
-from nba_player_similarity.api import create_app
 from test_similarity import cp
 
 
@@ -22,11 +20,15 @@ class SnapshotTests(unittest.TestCase):
         self.assertEqual(m['result_count'],14);self.assertEqual(m['player_count'],7)
         self.assertTrue(m['generated_at']);self.assertTrue(m['model_version'])
         release=self.out/'releases'/m['snapshot_id']
-        with TestClient(create_app(self.data)) as client:
-            for mode in ('per36','per_game'):
-                for p in range(1,8):
-                    saved=json.loads((release/f'results/{mode}/{p}.json').read_text())
-                    self.assertEqual(saved,client.get(f'/players/{p}/comparisons?mode={mode}').json())
+        # Archived prototype reproducibility; active API uses season Z-scores.
+        from nba_player_similarity.similarity import SeasonBaseline
+        checkpoints=json.loads((self.data/'derived/2024-25.json').read_text())
+        names={str(p):f'Player {p}' for p in range(1,8)}
+        for mode in ('per36','per_game'):
+            baseline=SeasonBaseline(checkpoints,mode=mode)
+            for p in range(1,8):
+                saved=json.loads((release/f'results/{mode}/{p}.json').read_text())
+                self.assertEqual(saved,comparison_response(baseline,names,str(p)))
 
     def test_failed_partial_generation_keeps_previous_snapshot(self):
         generate(self.data,self.out);before={p.relative_to(self.out):p.read_bytes() for p in self.out.rglob('*.json')}

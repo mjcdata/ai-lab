@@ -1,166 +1,86 @@
-> **Current MVP scope (2026-11-08):** Build and validate a **local Next.js** NBA Player Similarity app comparing **2026–27 players** against eligible historical NBA regular-season player checkpoints from **1946–47 through 2025–26**. The existing 2024–25 static app is a tested **prototype**, not the finished MVP. Next priorities: complete local historical ingestion, build comparable career checkpoints with era/missing-data handling, ingest 2026–27 inputs, and serve real historical comparisons locally. Use standardized Euclidean distance as the baseline; **no predictive modeling**. Portfolio integration, public deployment, scheduling/automation, headshots and similarity percentages are deferred. See [the updated MVP plan](WORKPLAN.md#current-mvp-direction--supersedes-earlier-deployment-first-sequencing-2026-11-08). Existing commands below document the prototype until the new pipeline is implemented.
+# NBA Player Similarity — local season-based MVP
 
-# NBA player similarity
+**Current methodology (approved 2026-11-08):** Compare 2026–27 season-to-date players against historical **player-season** records from 1946–47 through 2025–26. Per-36 statistics only; PTS, REB, AST, STL, BLK and TOV have equal weight. No career-stage alignment, minute window, per-game mode, minimum games/minutes cutoff, predictive model, public deployment or scheduler.
 
-Minimal Python project for the [project work plan](WORKPLAN.md).
-Requires Python 3.12 or newer and `uv`.
+## Calculation and eligibility
 
-From this directory, install the project into its isolated environment:
+`seasonal.py` aggregates each player's regular-season game logs into one player-season, including all teams for traded players. Six-feature per-36 rates use total statistics × 36 / total minutes. Each eligible player-season contributes once to its season's **population** mean and standard deviation (ddof=0). Distances compare the current player's current-season Z-scores against each historical record's own-season Z-scores. A constant feature receives Z=0 and is recorded in the season coverage report.
 
-```sh
-uv sync
-```
+The five smallest equal-weight Euclidean distances are returned, ordered deterministically by distance, season and player ID. Distinct **player-season records**, including multiple years of the same historical player, are allowed. The selected player's own prior seasons are excluded. No candidate minutes matching is performed. Explanations show all six raw per-36 values, each season's Z-scores and squared-distance contributions, which sum to distance squared.
 
-Run the lightweight import smoke test with Python's standard-library test runner:
+A profile requires finite, nonnegative observations for every feature and minutes across all its source games, positive total minutes, valid dates and no unresolved duplicate player/game records. Missing historical statistics are **never zero-filled or extrapolated from a subset of games**. A zero-minute row with any positive six-stat count makes season rates unreliable under source whole-minute precision; the entire player-season is excluded. Zero-minute rows with all six counts zero may remain if total season minutes are positive. A positive but tiny sample remains eligible and carries exposure warnings. Duplicate conflicts exclude the entire affected player-season rather than silently shortening it. These are reliability checks, not exposure cutoffs.
 
-```sh
-uv run python -m unittest discover -s code/tests -v
-```
+Local `data/reports/season-profiles.json` records exclusions by player, season and reason, with counts, missingness and season scalers. `/coverage` exposes the same report locally. Reasons overlap; do not sum reason counts as unique exclusions. Fitting uses the eligible complete-case population, so missingness can bias the season normalization. Z-scores do not fully account for pace, roles, rules or data quality.
 
-The package uses a `code/src/` layout. The season-scoped baseline is implemented; full career-history modeling remains future work.
+## Current local results
 
+All **80 historical season caches** are present (1,389,756 raw rows); no historical fetch was needed for this change. Current-season availability was verified and 3,171 rows through **2026-11-08** were cached using the existing nba_api fetcher. There are 460 current player-seasons: **457 eligible**, 3 excluded. The historical pool has **19,134 eligible player-seasons**. Across history and current data, 6,605 player-seasons are excluded. The earliest usable complete six-stat profiles are from **1977–78**; having raw seasons back to 1946 does not imply comparisons can cover them.
 
-## Project layout and complete local application
+Examples from the current frozen snapshot (lower distance is closer): Stephen Curry → Tracy McGrady 2003–04 (0.610); Nikola Jokić → Grant Hill 1996–97 (0.687); Anthony Edwards → Paul Pierce 2000–01 (0.450). Bronny James has only 12 observed minutes and illustrates unstable tiny-sample rates. These are descriptive statistical matches, not claims of equivalent ability or style. Complete historical game coverage has not been independently verified.
 
-```text
-nba/
-├── code/
-│   ├── src/nba_player_similarity/   # Python preparation, model and API
-│   ├── tests/                      # Python offline tests
-│   └── frontend/                   # Next.js React app and browser tests
-├── data/                           # Local raw/derived caches and lineage reports (ignored)
-├── artifacts/                      # Tracked evaluation reports; ignored generated experiment/model outputs
-├── README.md
-├── WORKPLAN.md
-├── pyproject.toml
-└── uv.lock
-```
+## Layout and local commands
 
-Python package names/imports and the API contract are unchanged. `uv` now builds
-from `code/src`; test discovery uses `code/tests`. Existing raw/prepared caches
-and lineage reports remain in `data/`. The generated scaler sensitivity JSON
-moved to `artifacts/scaler_experiment.json` without changing its contents.
-Baseline/evaluation Markdown reports moved into `artifacts/` and remain tracked;
-future generated model/scaler binaries, screenshots and evaluation outputs there
-are ignored. There are no persisted trained model files to migrate.
+- `code/src/nba_player_similarity/`: ingestion, season profiles, scoring, API and snapshot generation.
+- `code/frontend/`: static Next.js application and desktop/mobile tests.
+- `data/`: ignored local raw/derived data and quality reports.
+- `artifacts/`: ignored generated immutable snapshots; tracked Markdown evaluation records.
+- README, WORKPLAN and Python configuration remain at the project root. Use `uv` for the isolated Python environment.
 
-### Build and view the static application
+From `machine-learning/nba/`, install dependencies with `uv sync --locked`; install frontend dependencies in `code/frontend/` using `pnpm install --frozen-lockfile`.
 
-One-time dependency setup (package downloads only, no NBA acquisition):
+Verify/inventory historical caches without network:
 
 ```sh
-# From machine-learning/nba/:
-uv sync --locked
-# From code/frontend/:
-pnpm install --frozen-lockfile
+uv run --offline python -m nba_player_similarity.ingestion
 ```
 
-Generate and validate a local immutable snapshot, then export Next.js:
+Explicit manual current-season acquisition/refresh (network; never run by build/API):
 
 ```sh
-# From machine-learning/nba/:
-uv run --offline python -m nba_player_similarity.snapshot
+uv run --with nba_api --with pandas python -m nba_player_similarity.ingestion 2026-27 --download
+# Only for an intentional update: add --refresh; old raw bytes are backed up.
+```
+
+Generate the season-based snapshot offline, then build/view locally:
+
+```sh
+uv run --offline python -m nba_player_similarity.season_snapshot
 cd code/frontend
 pnpm build
 pnpm start
 ```
 
-Open **http://127.0.0.1:3000**. `pnpm start` serves `out/` using Python's static
-HTTP server; there is no Next.js runtime server or Python model API dependency.
-FastAPI remains available independently from the NBA root:
+Open [the local app](http://127.0.0.1:3000). It loads individual `results/per36/<player_id>.json` files from one immutable release; there is no continuously running Python API dependency or client-side scoring. Search, six-stat reference/candidate grids, Z-score explanations, dates, games/minutes, exposure warnings and loading/error/empty states remain available. Reload an existing tab after refresh. `pnpm dev` stages the same snapshot for UI iteration.
+
+Optional local API, from the NBA root:
 
 ```sh
 uv run --offline uvicorn nba_player_similarity.api:app --host 127.0.0.1 --port 8000
 ```
 
-Optional API docs: **http://127.0.0.1:8000/docs**. `pnpm dev` stages the same
-validated snapshot before starting Next.js for UI iteration. The static UI does
-not proxy to FastAPI. Local generated datasets and snapshot assets stay ignored.
-No accounts, public upload, paid service or recurring automation are configured.
+[API docs](http://127.0.0.1:8000/docs): `/health`, `/players?q=...`, `/players/{id}`, `/players/{id}/comparisons`, `/coverage`. Only `mode=per36` is accepted; `per_game` is rejected. Missing historical/current caches fail explicitly without downloading or falling back to old data. The API reads the same raw sources and uses the same season model as snapshot generation.
 
-On this Mac, if commands are absent from PATH, use the installed tools:
+Snapshots retain the existing versioned-release/atomic-pointer architecture. Schema v2 metadata includes generation time, current season, model/code version, all 81 raw source hashes, per-season eligibility counts, per-file checksums and per-36-only counts. Failed generation preserves the last valid release; a generation lock prevents concurrent activation. Missing source files, nonfinite JSON, parity errors, source changes or checksum failures prevent publication. Old schema-v1 prototype releases are retained for research rollback but rejected by the active frontend. Builds stage only one validated release, then export static HTML/JS/JSON; all generated data stay Git-ignored. No automation is configured.
 
-```sh
-export PATH="$HOME/.local/bin:$HOME/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$HOME/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:$PATH"
-```
+The old `similarity.py`, `preparation.py`, `snapshot.py` and experimental reports are retained as **archived 2024–25 research/reproducibility tools**. Their checkpoint, scoring and export workflows are not used by the current app; shared numeric/date validation utilities are reused. Use `season_snapshot`, not the old `snapshot` command, for current application refreshes. Never serve a build-in-progress export or publish data without separate approval.
 
-### Snapshot layout, refresh and failure safety
-
-`artifacts/snapshots/current.json` is a small atomic pointer to an immutable
-`releases/<snapshot_id>/` directory. Each release has `manifest.json`,
-`players.json`, and **one `results/<mode>/<player_id>.json` file per player/mode**.
-The actual local release contains 569 players / 1,138 comparison records. No
-single bulk-results payload is loaded by the browser. The player index is
-searched/paginated locally, with one coherent release pinned per page session.
-The UI continues to show both modes, reference stats, scores, six-feature
-explanations, dates/exposure, warnings and all loading/error/empty states.
-`page.jsx` manages state; `components/` retains the existing logical boundaries.
-
-The manifest records schema version, UTC generation timestamp, season, model
-version/code digest, source hashes, modes/counts and each file's size/SHA-256.
-The model version combines the approved baseline identifier with a digest of
-scoring/preparation/response code. Generation uses the unchanged scoring model
-and a shared response formatter also used by FastAPI, avoiding divergent data
-contracts. No frontend calculations approximate or rerank model results.
-
-For a refresh, first obtain/prepare any approved source updates through the
-existing local workflow. Snapshot generation itself **never downloads or
-prepares NBA data**. Then run the same generator/build commands above; no
-scheduler is enabled. The CLI also accepts `--data-dir` and `--output-dir` for
-future automated invocations. Only the approved 2024–25 season is accepted;
-adding a new season still requires a scope decision and UI/data updates.
-Set `NBA_SNAPSHOT_DIR` to an absolute artifact snapshot root when building from
-another approved artifact location.
-
-Generation writes into a staging directory under the snapshot root while
-holding `.generation-lock`. It validates every player/mode against the complete
-API-shaped payload, checks counts/eligibility/explanations, serializes finite
-JSON, re-reads checksums, and confirms sources stayed unchanged. Only then is
-the release made immutable and `current.json` atomically replaced. Partial
-computation, bad data, parity failures or activation failure leave the previous
-pointer and release intact. Old releases are retained for rollback; no automatic
-pruning occurs. Concurrent runs fail rather than race. After a killed process,
-inspect for a live generator before manually removing a stale lock/staging dir.
-An orphan fully generated release after a failed activation is safe to retain.
-This protects against process failure; it is not a substitute for disk backups.
-
-`pnpm build` first verifies the active manifest and every indexed file, stages
-only that complete release into ignored `public/snapshots/`, then creates a
-fully static `out/`. A fresh checkout without a local snapshot fails clearly
-instead of attempting NBA downloads or building an empty site. Cloud builds
-would need an explicitly supplied snapshot artifact. No GitHub automation or
-workflow is configured to generate/deploy data. No public build should be
-uploaded before separate deployment permission and redistribution review.
-
-Keep the immutable artifacts for rollback; restore a verified prior manifest
-and pointer with an atomic replacement, then rebuild. Serve a completed `out/`
-directory, never a build-in-progress directory. Publication/version rollout is
-not configured. An already open tab pins its release; if a later deployment no
-longer contains that release, reload the page to select the new snapshot. The
-loader reports a retry/refresh error rather than silently mixing versions.
-
-### Tests
+## Validation
 
 ```sh
-# NBA root:
+# NBA root
 uv run --offline python -m unittest discover -s code/tests -v
-# Frontend directory:
+# Frontend directory
 pnpm run test:unit
-# With the static export serving on port 3000:
-pnpm exec playwright install chromium
-pnpm test
+pnpm build
+# With static server on port 3000; use the existing local browser cache on this Mac
+PLAYWRIGHT_BROWSERS_PATH=/private/tmp/nba-playwright pnpm test
 ```
 
-The browser install is test tooling, not NBA data. This Mac's existing temporary
-browser can be reused with `PLAYWRIGHT_BROWSERS_PATH=/private/tmp/nba-playwright`.
-Validation: **40 Python tests**, **4 Node loader/build-staging tests**, and **8
-desktop/mobile Playwright cases** pass. Failure injection covers partial
-snapshot generation, parity corruption and atomic-pointer activation failures.
-All 1,138 real result files were checked for exact complete JSON parity against
-FastAPI via in-process TestClient. Source cache hashes remain unchanged. The
-static browser suite ran with FastAPI stopped and rejects runtime `/api/`
-requests; both modes, reference stats, explanations/warnings, search, retries,
-loading and empty states pass. Next.js build produces no dynamic routes.
+**Current validation:** 51 Python tests, 4 Node loader/staging tests and all 8 desktop/mobile browser cases passed; production static build passed. Initial browser attempts exposed test synchronization timing failures; after waiting explicitly for the roster/results to render, the full suite passed. The existing httpx/Starlette test transport deprecation warning remains.
+
+Python tests cover aggregation, independent per-season normalization, unit scaling invariance, missing/zero-minute/duplicate exclusions, small exposures, own-player exclusion, repeated historical players across seasons, deterministic ties, sparse results, explanation identities, API parity and snapshot failure safety. Loader tests cover schema/identity validation, per-game rejection, aborts/retries and corrupt snapshot staging. Browser tests cover search, reference stats/explanations, historical season labels, removed mode controls, limited-exposure warnings, desktop/mobile layout and loading/error/empty states. Real-source API/snapshot parity was checked for Curry, Jokić, Bronny James, Edwards and LeBron James; all 81 source hashes stayed unchanged during generation and validation.
+
+The following ingestion and DATA-2 notes retain historical context; any old checkpoint, per-game or fixed-scaler methodology below is superseded by the season-based method above.
 
 ## Historical ingestion (HIST-1, MacBook only)
 

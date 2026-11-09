@@ -9,7 +9,7 @@ function StatisticalExplanation({ comparison }) {
         Why this comparison? <span>+</span>
       </summary>
       <p>
-        Each statistic has equal weight after standardization. The contributions
+        Each statistic has equal weight after standardization against its own season. The contributions
         below sum to squared distance. They explain the calculation, not player
         quality.
       </p>
@@ -39,16 +39,13 @@ export function ComparisonCard({ c, i, mode, referenceName }) {
       <div className="card-top">
         <span className="rank">{String(i + 1).padStart(2, "0")}</span>
         <div className="card-name">
-          <h3>{c.name}</h3>
+          <h3>{c.name} · {c.season}</h3>
           <p>
             {c.checkpoint.games} games ·{" "}
             {fmt(c.checkpoint.cumulative_minutes, 0)} min ·{" "}
             {c.checkpoint.GAME_DATE}
           </p>
-          <p>
-            {c.minute_difference_percent >= 0 ? "+" : ""}
-            {fmt(c.minute_difference_percent)}% minutes vs reference
-          </p>
+
         </div>
         <div className="score">
           <strong>{fmt(c.distance, 3)}</strong>
@@ -58,7 +55,7 @@ export function ComparisonCard({ c, i, mode, referenceName }) {
       <div className="table-scroll">
         <table>
           <caption>
-            {mode === "per36" ? "Per-36" : "Per-game"} statistics ·{" "}
+            Per-36 statistics ·{" "}
             {referenceName} vs {c.name}
           </caption>
           <thead>
@@ -67,6 +64,7 @@ export function ComparisonCard({ c, i, mode, referenceName }) {
               <th>REFERENCE</th>
               <th>MATCH</th>
               <th>DIFFERENCE</th>
+              <th>REF Z</th><th>MATCH Z</th>
             </tr>
           </thead>
           <tbody>
@@ -79,6 +77,8 @@ export function ComparisonCard({ c, i, mode, referenceName }) {
                   {c.features[s].difference > 0 ? "+" : ""}
                   {fmt(c.features[s].difference, 2)}
                 </td>
+                <td>{fmt(c.features[s].reference_z, 2)}</td>
+                <td>{fmt(c.features[s].comparison_z, 2)}</td>
               </tr>
             ))}
           </tbody>

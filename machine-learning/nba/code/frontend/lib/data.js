@@ -1,4 +1,4 @@
-// One immutable snapshot per page session: mode changes cannot mix generations.
+// One immutable snapshot per page session: requests cannot mix generations.
 let snapshotPromise;
 async function json(url, signal) {
   const response = await fetch(url, { signal });
@@ -12,7 +12,7 @@ async function snapshot() {
       if (!/^[a-f0-9]{32}$/.test(current.snapshot_id)) throw new Error('Invalid snapshot version.');
       const base = `/snapshots/releases/${current.snapshot_id}`;
       const manifest = await json(`${base}/manifest.json`);
-      if (manifest.schema_version !== 1 || manifest.snapshot_id !== current.snapshot_id || manifest.season !== '2024-25') throw new Error('Unsupported snapshot metadata.');
+      if (manifest.schema_version !== 2 || manifest.snapshot_id !== current.snapshot_id || manifest.season !== '2026-27') throw new Error('Unsupported snapshot metadata.');
       const players = await json(`${base}/players.json`);
       if (!Array.isArray(players) || players.length !== manifest.player_count) throw new Error('Invalid player index.');
       return { base, manifest, players };
@@ -28,7 +28,7 @@ export async function searchPlayers(query, signal) {
   return { players: matches.slice(0, 25), total: matches.length };
 }
 export async function loadComparisons(playerId, mode, signal) {
-  if (!/^\d+$/.test(playerId) || !['per36', 'per_game'].includes(mode)) throw new Error('Invalid player or mode.');
+  if (!/^\d+$/.test(playerId) || mode !== 'per36') throw new Error('Invalid player or mode.');
   const { base, manifest, players } = await snapshot();
   signal?.throwIfAborted();
   if (!players.some(p => p.player_id === playerId)) throw new Error('Player not found in this snapshot.');

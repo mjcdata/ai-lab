@@ -10,7 +10,7 @@ export default function Home() {
   const [searchStatus, setSearchStatus] = useState("loading");
   const [searchError, setSearchError] = useState("");
   const [selected, setSelected] = useState(null);
-  const [mode, setMode] = useState("per36");
+  const mode = "per36";
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -61,7 +61,7 @@ export default function Home() {
           <span className="mark">◉</span> NBA Player Similarity
         </a>
         <span className="edition">AI LAB / EXPERIMENT 001</span>
-        <span className="season">2024–25 · REGULAR SEASON</span>
+        <span className="season">2026–27 → HISTORICAL SEASONS</span>
       </header>
       <section className="intro">
         <p className="eyebrow">THE PLAYER SIMILARITY LAB</p>
@@ -70,11 +70,11 @@ export default function Home() {
           <em>Similarity</em>
         </h1>
         <p className="lede">
-          Find statistical neighbors at a similar point in their season. Six
+          Find historical player-season neighbors. Per-36 rates, season-relative Z-scores. Six
           stats. Equal weight. A closer look at the game.
         </p>
         <div className="scope">
-          <span className="dot" /> Season-to-date only · Not career comparisons
+          <span className="dot" /> 2026–27 season to date vs 1946–47–2025–26 · Not career comparisons
           or predictions
         </div>
       </section>
@@ -92,7 +92,6 @@ export default function Home() {
         <ComparisonResults
           selected={selected}
           mode={mode}
-          onModeChange={setMode}
           result={result}
           loading={loading}
           error={error}
@@ -102,9 +101,9 @@ export default function Home() {
       <footer>
         <strong>HOW IT WORKS</strong>
         <p>
-          Nearest checkpoint within ±10% cumulative season minutes →
+          One record per player-season →
           standardized six-stat profile → equal-weight Euclidean distance.
-          Original fixed scaler. No extra playing-time cutoff.
+          Within-season population Z-scores. Per-36 only. No playing-time cutoff.
         </p>
         <span>
           Local research MVP · No shooting efficiency, position or age features
