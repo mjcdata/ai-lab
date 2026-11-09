@@ -1,5 +1,22 @@
 # NBA Player Similarity — Work Breakdown Structure (WBS)
 
+## CEO acceptance and public deployment readiness — 2026-11-09
+
+The user reports that the **CEO accepted the NBA Player Similarity MVP and approved public deployment**. That acceptance supersedes older pending product/publication approval wording. This task is readiness review only: **do not deploy yet**. No public URL exists or has been verified. Automation, paid services, domains and similarity-method changes remain outside scope. NBA redistribution clearance remains a distinct unresolved issue; CEO product acceptance is not evidence of third-party permission.
+
+- [x] CEO MVP acceptance and public-deployment decision recorded; do not reopen that approval gate.
+- [x] Vercel static compatibility assessed. Source application root: `machine-learning/nba/code/frontend`; Node 24, `pnpm install --frozen-lockfile`, `pnpm build`, output `out`. Recommend manual prebuilt upload using a dedicated **Other/static** Vercel project rather than a Git-connected build that cannot access ignored snapshots.
+- [x] Added local-only isolated Build Output API v3 packaging, public-file allowlist/checksum checks, rejection of symlinks/common credential patterns, routing/404 config, software license copy and visible NBA.com statistics attribution. No scoring or dataset changes.
+- [x] Audit: 457 result assets, 460 snapshot JSON files (5,613,560 bytes); entire reviewed export 491 files / 6,595,528 bytes (6.29 MiB), largest 242,212 bytes. No raw/prepared data, old releases, env files, Python service or private source paths in the upload bundle. No required runtime environment variables. Git ignores datasets, artifacts, export and Vercel local metadata.
+- [x] 51 Python tests, 7 Node tests and production static export passed for this review. All 8 desktop/mobile browser cases passed against the isolated static bundle on port 3001, with no runtime API dependency.
+- [x] Exact local build/package, later manual upload and public verification instructions documented in [DEPLOYMENT.md](DEPLOYMENT.md).
+- [ ] Resolve/document NBA redistribution permission or qualified clearance for the proposed public use. Attribution added; it alone is not permission.
+- [ ] Confirm Vercel account/project and personal/noncommercial Hobby eligibility; if a paid plan is required, obtain cost approval first.
+- [ ] Execute public deployment only in a later task after blockers are resolved, then verify and record its actual URL/deployment ID/snapshot. No deployment claimed here.
+
+**Recommendation:** Use the already reviewed isolated static bundle under ignored `artifacts/vercel/2026-11-09-readiness/`; it contains only Vercel static output/routing config and needs no Python API or runtime access to Mac files. Avoid committing datasets or connecting automatic Git deployments. Product acceptance is complete; rights clearance and hosting-account eligibility are the remaining release decisions. Historical coverage and early-season sample limitations remain disclosed, not silently treated as solved.
+
+
 ## Approved season-based direction — supersedes career-checkpoint requirements (2026-11-08)
 
 User explicitly replaced career-stage matching with **2026–27 current player-season → historical player-season** similarity. Use per-36 only and within-season population Z-scores, then equal-weight Euclidean distance on PTS, REB, AST, STL, BLK, TOV. No career-stage or minute-window matching and no per-game UI/API option. No arbitrary games/minutes threshold. Incomplete or unreliable profiles are excluded and reported; no zero imputation. Up to five distinct player-season matches may repeat a historical player across seasons; own-player prior seasons are excluded. The older career, minute-window, per-game and deployment-first plan sections below are historical records, not current requirements.
@@ -10,7 +27,7 @@ User explicitly replaced career-stage matching with **2026–27 current player-s
 - [x] Current-to-history top-five scoring and per-stat raw/Z explanation output; no exposure matching.
 - [x] Local API, immutable static snapshot schema v2 and Next.js UI updated to per-36 only, with historical season labels and exposure warnings.
 - [x] Offline unit/API/snapshot tests, static build and real-source parity validation. All 8 desktop/mobile browser cases passed after explicit asynchronous render waits.
-- [ ] Independent historical game-coverage review and user walkthrough of the new local app. Public deployment and automation remain deferred.
+- [ ] Independent historical game-coverage review remains a research limitation. CEO MVP acceptance/public-deployment approval is recorded above; actual deployment has not occurred and automation remains deferred.
 
 **Local findings:** 26,196 observed player-seasons across 81 seasons; 19,591 eligible (19,134 historical + 457 current), 6,605 excluded. Current source has 460 players, of whom 3 are excluded. Reason counts overlap: 6,309 missing/invalid statistics; 854 nonpositive total minutes; 4,552 positive statistics attached to zero minutes; 13 player-seasons with unresolved duplicate games. No complete usable six-stat profiles before 1977–78. See ignored `data/reports/season-profiles.json` for exact season/player reasons and scalers. No imputation, altered raw data, fitted predictive model, public upload or recurring automation.
 
@@ -196,9 +213,9 @@ User authorized an isolated experiment, not a production methodology change. Tes
 ### 6.0 Public deployment
 - [x] **6.1** Deployment architecture research completed 2026-11-08; comparison, sizing evidence and recommendation below. Research only; no deployment or architecture implementation.
 - [x] **6.2 DECISION GATE:** User approved precomputed static Next.js with Cloudflare Pages preferred and a $0/month hosting target on 2026-11-08. Authorized local implementation/validation only; public deployment, purchases and recurring automation remain unauthorized.
-- [ ] **6.3** Public deployment pending separate approval and redistribution review. Local static Next.js export/snapshot implementation is complete and validated; the retained FastAPI service is local-only, not required by the public/static architecture.
+- [ ] **6.3** CEO approved public deployment on 2026-11-09; execution pending redistribution clearance and the later deployment task. Local static Next.js export/snapshot implementation is complete and validated; the retained FastAPI service is local-only, not required by the public/static architecture.
 - [ ] **6.4** Link independent NBA app from existing portfolio.
-- [ ] **6.5** Document deployment, operations, and reproducibility.
+- [ ] **6.5** Public deployment verification and post-release operations record pending. Pre-release manual deployment/reproducibility instructions are complete in DEPLOYMENT.md.
 
 **Deliverable:** Publicly accessible NBA similarity app linked from portfolio.
 

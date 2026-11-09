@@ -109,6 +109,7 @@ export default function Home() {
           Local research MVP · No shooting efficiency, position or age features
           · Distance is not a probability.
         </span>
+        <p>Statistics source: <a href="https://www.nba.com/stats">NBA.com</a>. Independent research project.</p>
       </footer>
     </main>
   );

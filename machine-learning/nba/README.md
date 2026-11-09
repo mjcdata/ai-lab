@@ -1,5 +1,7 @@
 # NBA Player Similarity — local season-based MVP
 
+**Deployment readiness (2026-11-09):** CEO accepted the MVP and approved public deployment; no deployment has been performed. See [Vercel readiness and exact manual instructions](DEPLOYMENT.md). The app uses static snapshots; a fresh Git checkout lacks ignored build inputs. Rights clearance and Vercel plan/account eligibility remain unresolved.
+
 **Current methodology (approved 2026-11-08):** Compare 2026–27 season-to-date players against historical **player-season** records from 1946–47 through 2025–26. Per-36 statistics only; PTS, REB, AST, STL, BLK and TOV have equal weight. No career-stage alignment, minute window, per-game mode, minimum games/minutes cutoff, predictive model, public deployment or scheduler.
 
 ## Calculation and eligibility

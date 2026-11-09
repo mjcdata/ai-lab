@@ -10,6 +10,7 @@ test('current-to-historical per36 search, seasonal matches and six-stat explanat
  await page.goto('/');await expect(page).toHaveTitle('NBA Player Similarity');
  await expect(page.getByRole('heading',{level:1})).toHaveText('NBA Player Similarity');
  await expect(page.locator('.season')).toContainText('2026–27');
+ await expect(page.locator('footer').getByRole('link',{name:'NBA.com'})).toHaveAttribute('href','https://www.nba.com/stats');
  await select(page);await expect(page.locator('.comparison')).toHaveCount(5);
  await expect(page.getByRole('button',{name:'Per game',exact:true})).toHaveCount(0);
  await expect(page.locator('.comparison').first().locator('h3')).toContainText(/20\d{2}-\d{2}/);

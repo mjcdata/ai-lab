@@ -14,3 +14,4 @@ code/frontend/.env*
 !code/frontend/.env.example
 code/frontend/public/snapshots/
 code/frontend/public/.snapshot-stage-*/
+code/frontend/.vercel/
