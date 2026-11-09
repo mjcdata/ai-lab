@@ -101,10 +101,10 @@ class HistoricalSeasons:
                                     distance=math.sqrt(squared), checkpoint=p, features=features))
         warnings = ['Limited playing time can produce unstable per-36 rates; no minimum games or minutes cutoff is imposed.',
                     'Each profile is standardized against eligible players in its own season; this does not remove all era or role effects.',
-                    'Historical game-log completeness has not been independently established. Missing-stat and unreliable-minute player-seasons are excluded.',
+                    'Historical game-log completeness has not been independently established. Missing-stat and unreliable-minute player seasons are excluded.',
                     'Source minutes have whole-minute precision. This is descriptive similarity, not prediction.']
         if len(comparisons) < 5:
-            warnings.append(f'Only {len(comparisons)} valid historical player-season matches; returning fewer than five.')
+            warnings.append(f'Only {len(comparisons)} valid historical season matches; returning fewer than five.')
         if self.reports[CURRENT]['scaler']['constant_features']:
             warnings.append('Current-season constant features receive Z-score zero; inspect the coverage report.')
         return dict(reference=target, mode='per36', season=CURRENT, model_version=MODEL_VERSION,

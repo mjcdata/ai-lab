@@ -18,7 +18,10 @@ test('current-to-historical per36 search, seasonal matches and six-stat explanat
  await page.locator('summary').first().click();
  await expect(page.locator('.contributions').first().locator('meter')).toHaveCount(6);
  await expect(page.locator('.warnings')).toContainText('Limited playing time');
- await expect(page.locator('.warnings')).toContainText('player-seasons excluded');
+ await expect(page.locator('.warnings')).toContainText('player seasons excluded');
+ await expect(page.locator('.lede')).toContainText('standardized within each season');
+ await expect(page.locator('main')).not.toContainText('player-season');
+ await expect(page.locator('main')).not.toContainText('season-relative');
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBeTruthy();
  expect(errors).toEqual([]);
 });

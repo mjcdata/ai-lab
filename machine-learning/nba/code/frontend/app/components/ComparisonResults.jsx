@@ -32,7 +32,7 @@ export function ComparisonResults({
         <div className="empty">
           <div className="spinner" />
           <h2>Finding statistical neighbors…</h2>
-          <p>Comparing season-relative six-stat profiles.</p>
+          <p>Comparing six statistics standardized within each season.</p>
         </div>
       )}
       {error && (
@@ -74,7 +74,7 @@ export function ComparisonResults({
           <div className="summary">
             <span>
               {result.comparisons.length} closest comparisons{" "}
-              <small>from {result.candidate_count} eligible historical player-seasons</small>
+              <small>from {result.candidate_count} eligible historical player seasons</small>
             </span>
             <span className="distance-key">LOWER DISTANCE = CLOSER</span>
           </div>
@@ -82,7 +82,7 @@ export function ComparisonResults({
             <div className="error">
               <h3>No eligible comparisons</h3>
               <p>
-                No eligible historical player-seasons have complete, reliable six-stat per-36 profiles.
+                No eligible historical player seasons have complete, reliable six-stat per-36 profiles.
               </p>
             </div>
           )}
@@ -99,7 +99,7 @@ export function ComparisonResults({
           </div>
           <div className="warnings">
             <h3>Read the numbers with context.</h3>
-            <p>{result.coverage?.excluded_player_seasons} player-seasons excluded for incomplete statistics, unreliable minutes or unresolved duplicate games.</p>
+            <p>{result.coverage?.excluded_player_seasons} player seasons excluded for incomplete statistics, unreliable minutes or unresolved duplicate games.</p>
             {result.warnings.map((w, i) => (
               <p key={i}>{w}</p>
             ))}

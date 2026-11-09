@@ -70,7 +70,7 @@ export default function Home() {
           <em>Similarity</em>
         </h1>
         <p className="lede">
-          Find historical player-season neighbors. Per-36 rates, season-relative Z-scores. Six
+          Find historical season matches. Per-36 rates standardized within each season. Six
           stats. Equal weight. A closer look at the game.
         </p>
         <div className="scope">
@@ -101,7 +101,7 @@ export default function Home() {
       <footer>
         <strong>HOW IT WORKS</strong>
         <p>
-          One record per player-season →
+          One record per player season →
           standardized six-stat profile → equal-weight Euclidean distance.
           Within-season population Z-scores. Per-36 only. No playing-time cutoff.
         </p>
