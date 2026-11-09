@@ -8,7 +8,9 @@ test('current-to-historical per36 search, seasonal matches and six-stat explanat
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.route('**/api/**',r=>{errors.push('Unexpected API request');return r.abort();});
  await page.goto('/');await expect(page).toHaveTitle('NBA Player Similarity');
- await expect(page.getByRole('heading',{level:1})).toHaveText('NBA Player Similarity');
+ await expect(page.locator('.intro')).toHaveCount(0);
+ await expect(page.getByText('THE PLAYER SIMILARITY LAB',{exact:true})).toHaveCount(0);
+ await expect(page.locator('.brand')).toContainText('NBA Player Similarity');
  await expect(page.locator('.season')).toContainText('2026–27');
  await expect(page.locator('footer').getByRole('link',{name:'NBA.com'})).toHaveAttribute('href','https://www.nba.com/stats');
  await select(page);await expect(page.locator('.comparison')).toHaveCount(5);
@@ -20,7 +22,6 @@ test('current-to-historical per36 search, seasonal matches and six-stat explanat
  await expect(page.locator('.contributions').first().locator('meter')).toHaveCount(6);
  await expect(page.locator('.warnings')).toContainText('Limited playing time');
  await expect(page.locator('.warnings')).toContainText('player seasons excluded');
- await expect(page.locator('.lede')).toContainText('standardized within each season');
  await expect(page.locator('main')).not.toContainText('player-season');
  await expect(page.locator('main')).not.toContainText('season-relative');
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBeTruthy();

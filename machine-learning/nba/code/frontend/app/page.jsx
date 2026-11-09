@@ -63,21 +63,6 @@ export default function Home() {
         <span className="edition">AI LAB / EXPERIMENT 001</span>
         <span className="season">2026–27 → HISTORICAL SEASONS</span>
       </header>
-      <section className="intro">
-        <p className="eyebrow">THE PLAYER SIMILARITY LAB</p>
-        <h1>
-          NBA Player <br />
-          <em>Similarity</em>
-        </h1>
-        <p className="lede">
-          Find historical season matches. Per-36 rates standardized within each season. Six
-          stats. Equal weight. A closer look at the game.
-        </p>
-        <div className="scope">
-          <span className="dot" /> 2026–27 season to date vs 1946–47–2025–26 · Not career comparisons
-          or predictions
-        </div>
-      </section>
       <div className="workspace">
         <PlayerSearch
           query={query}
