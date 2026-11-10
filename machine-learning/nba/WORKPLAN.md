@@ -1,5 +1,19 @@
 # NBA Player Similarity — Work Breakdown Structure (WBS)
 
+## Existing project recheck — ready, final production confirmation pending
+
+Reverified the existing local bundle link points to `nba-player-similarity` (`prj_1ElLC4mZqX42r6YHyej0vegnrSS6`) in `malcolmjconnors-projects`; no new project was created. The workspace billing API confirms **Hobby**. A GitHub link to `mjcdata/ai-lab` (`main`) had been added since setup. Removed only this project's Git connection using Vercel CLI and verified `link` is now absent, preserving the approved manual prebuilt workflow; the repository and global GitHub integration were not changed.
+
+Remote settings verified: Other/static framework, root `.`, empty install/build commands, output `.vercel/output/static`, Node 24 tooling, no Vercel Authentication/password/trusted-IP restriction. Deployment history is empty. Public/no-login access is configured; actual HTTP availability remains to be verified after deployment.
+
+The launch bundle under ignored `artifacts/vercel/2026-11-09-launch/` exactly matches the latest local `out/` byte-for-byte: 491 public files, 6,594,527 bytes, snapshot `32de55821ff743229801f546838596b9`, 457 players/results. Rechecked manifest and all result checksums, v3 routing and absence of functions. No model, frontend or data changes; tests/build were not rerun for this configuration-only recheck (prior launch validation remains recorded above). **No production deployment was executed. Final user confirmation is still required.**
+
+Exact command, run from the linked launch bundle directory only after confirmation:
+
+```sh
+PATH=/Users/mj/.nvm/versions/node/v24.22.1/bin:$PATH NPM_CONFIG_CACHE=/private/tmp/nba-vercel-npm npx --yes vercel@65.14.0 deploy --prebuilt --prod --scope malcolmjconnors-projects
+```
+
 ## Public launch authorized — 2026-11-09
 
 CEO/user decision: proceed as a free, publicly accessible personal portfolio demonstrating analytics, machine learning and software engineering skills, with no monetization. Use Vercel Hobby if account/use eligibility is confirmed. **Remaining NBA licensing uncertainty is explicitly accepted; noncommercial use does not establish permission. No further licensing research is requested.** This supersedes the prior instruction to obtain clearance before proceeding; it does not assert that permission has been obtained.
