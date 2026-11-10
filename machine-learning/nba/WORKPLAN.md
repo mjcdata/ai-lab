@@ -1,5 +1,14 @@
 # NBA Player Similarity — Work Breakdown Structure (WBS)
 
+## Public launch authorized — 2026-11-09
+
+CEO/user decision: proceed as a free, publicly accessible personal portfolio demonstrating analytics, machine learning and software engineering skills, with no monetization. Use Vercel Hobby if account/use eligibility is confirmed. **Remaining NBA licensing uncertainty is explicitly accepted; noncommercial use does not establish permission. No further licensing research is requested.** This supersedes the prior instruction to obtain clearance before proceeding; it does not assert that permission has been obtained.
+
+Authorized next steps: verify the tested isolated static bundle, guide Vercel login and project linking, verify free hosting and public/no-login settings, then **request final confirmation before production deployment**. Only after that confirmation, upload the static bundle and test the actual public URL. No model changes, paid services, custom domains, Git deployment automation or scheduled refresh. Existing source attribution remains.
+
+Launch bundle rebuilt and validated locally at ignored `artifacts/vercel/2026-11-09-launch/` (491 files, 6,594,527 bytes; snapshot `32de55821ff743229801f546838596b9`, 457 players). This includes the accepted intro-section removal; the earlier readiness bundle is retained unchanged. Production build, 51 Python tests, 7 Node tests and all 8 desktop/mobile browser cases passed against this isolated bundle. Vercel CLI 65.14.0 login completed as `malcolmjconnor`. Verified workspace `malcolmjconnors-projects` is on **Hobby**. Created/linked project `nba-player-similarity` (`prj_1ElLC4mZqX42r6YHyej0vegnrSS6`) without connecting Git. Verified static/Other framework, project root `.`, output `.vercel/output/static`, Node 24 tooling, empty remote install/build commands, Vercel Authentication disabled (`ssoProtection: null`), no password or trusted-IP restriction, and no Git auto-deploy connection. Removed the unnecessary CLI-generated `.env.local` OIDC file without reading/exposing its token; it was never inside public assets. Project linking did not upload the app. **Final production confirmation is pending. No upload/deployment has occurred and no public URL exists.** After confirmation, deploy the tested prebuilt bundle and record the actual URL, deployment ID and public smoke-test results here.
+
+
 ## CEO acceptance and public deployment readiness — 2026-11-09
 
 The user reports that the **CEO accepted the NBA Player Similarity MVP and approved public deployment**. That acceptance supersedes older pending product/publication approval wording. This task is readiness review only: **do not deploy yet**. No public URL exists or has been verified. Automation, paid services, domains and similarity-method changes remain outside scope. NBA redistribution clearance remains a distinct unresolved issue; CEO product acceptance is not evidence of third-party permission.

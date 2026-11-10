@@ -1,5 +1,13 @@
 # Vercel deployment readiness — 2026-11-09
 
+## Superseding launch decision
+
+The user now authorizes a free, noncommercial, public personal portfolio release on Vercel Hobby if eligible. The user explicitly accepts the remaining NBA licensing uncertainty and directs no further licensing research; this does not assert publication permission. Prior rights-clearance blocker text below records the readiness-review state and is superseded for execution by this decision. Guide login/linking and verify hosting settings, but **obtain final user confirmation before production upload**. Then verify the actual public URL and update WORKPLAN. No paid services or automation. The launch bundle is `artifacts/vercel/2026-11-09-launch/`, freshly built with the accepted intro removal; the earlier readiness bundle is retained unchanged.
+
+## Verified launch setup — awaiting final production confirmation
+
+Authenticated as `malcolmjconnor`; personal workspace `malcolmjconnors-projects` reports Hobby. Isolated `2026-11-09-launch` bundle is linked to `nba-player-similarity` (project `prj_1ElLC4mZqX42r6YHyej0vegnrSS6`). Framework is Other/static, bundle root `.`, output `.vercel/output/static`, Node 24 tooling, remote build/install disabled, Vercel Authentication disabled, no password or trusted-IP restriction, and no Git connection. No deployment has been made. The CLI-generated local OIDC env file was removed and was never public. Use pinned CLI `65.14.0` for the final `deploy --prebuilt --prod --scope malcolmjconnors-projects` command **only after final user confirmation**. The launch bundle has 491 public files / 6,594,527 bytes and the same accepted snapshot/results; the original readiness bundle below is retained unchanged.
+
 ## Decision and current status
 
 The user reports CEO acceptance of the MVP and approval for public deployment. That product/deployment decision is recorded; it does not need to be requested again. This task authorizes review, local packaging and documentation **only**. No Vercel login, project creation/link, upload, deployment, paid service, domain or refresh automation was performed. There is no verified public URL.
