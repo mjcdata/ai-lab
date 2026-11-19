@@ -1,5 +1,33 @@
 # NBA Player Similarity — Work Breakdown Structure (WBS)
 
+## Verified production release
+
+The current task found an existing **READY production deployment** in the approved Vercel project and verified it without creating another deployment. This section supersedes older pending-confirmation, empty-history and not-deployed statements below, which remain historical setup records.
+
+- **Public URL:** https://nba-player-similarity.vercel.app
+- **Deployment ID:** `dpl_DR1p9RK7iMfGvK6ttgE615DTm8Yk`
+- **Deployment-specific URL:** https://nba-player-similarity-mtvj4vlcz-malcolmjconnors-projects.vercel.app
+- **Project:** `nba-player-similarity` / `prj_1ElLC4mZqX42r6YHyej0vegnrSS6`, workspace `malcolmjconnors-projects`; authenticated username `malcolmjconnor`.
+- **Snapshot:** `32de55821ff743229801f546838596b9`; 457 current players and 457 per-36 result assets. This remains the accepted frozen snapshot using current-season logs through 2026-11-08; no refresh was run.
+- **Hosting:** Hobby verified through the billing API, Other/static, no remote install/build, no Vercel Authentication/password/IP restriction. Git connection remains absent; no automatic Git deployments were enabled.
+- **Action taken:** Read and verified the existing production release. No project creation, production upload, redeployment, dataset rebuild, model/frontend change, paid service or refresh automation.
+
+**Public smoke tests run for this task:** unauthenticated HTTPS GET `/` returned 200 and matched the validated launch bundle's HTML exactly. Snapshot pointer, manifest hash and 457-player search index passed integrity checks. Five representative result JSONs (Stephen Curry, Nikola Jokić, Bronny James, Anthony Edwards and LeBron James) returned 200, matched their manifest checksums and contained five historical season matches with six-feature explanations and self-exclusion. All seven JS/CSS assets referenced by the page returned 200; unknown routes returned 404. Six referenced assets matched local bytes; the webpack runtime consists of the identical local runtime plus a Vercel deployment-toolbar append gated by its explicit opt-in cookie. No scoring/data differences were observed.
+
+**Browser validation:** all **8 desktop/mobile Playwright cases passed against the public production URL in fresh browser contexts**. Verified player search/selection, five comparisons, per-36 reference values, historical season labels, all six explanations, limited-exposure warnings, no per-game control, responsive layout, no runtime API calls, and simulated loading/error/retry/empty states. The first test attempt could not launch because the temporary browser binary had expired; restored only test tooling and reran successfully. Python/model/unit tests and a production build were not rerun: no implementation or data changed; prior launch validation is recorded below.
+
+**Representative verified matches:** Curry → Tracy McGrady 2003–04 (distance 0.6097021561); Jokić → Grant Hill 1996–97 (0.6866328527); Bronny → Alondes Williams 2023–24 (0.6848496174); Edwards → Paul Pierce 2000–01 (0.4504569524); LeBron → Scottie Pippen 1999–00 (0.4666325699).
+
+- [x] Production URL, actual deployment ID and snapshot verified and recorded.
+- [x] Public/no-login player search, historical comparisons and static assets verified.
+- [x] WBS 6.3 public production deployment verified; this task did not redeploy it.
+- [x] WBS 6.5 manual deployment/verification and reproducibility documentation completed for this release.
+- [ ] Optional portfolio/résumé/GitHub-profile link placement remains a user follow-up; no portfolio changes were requested here.
+
+**Next action:** The user can link the verified public URL from their résumé, GitHub profile or React portfolio. Keep refreshes and future releases manual unless separately authorized. No approval or deployment decision remains for this already verified release.
+
+
+
 ## Existing project recheck — ready, final production confirmation pending
 
 Reverified the existing local bundle link points to `nba-player-similarity` (`prj_1ElLC4mZqX42r6YHyej0vegnrSS6`) in `malcolmjconnors-projects`; no new project was created. The workspace billing API confirms **Hobby**. A GitHub link to `mjcdata/ai-lab` (`main`) had been added since setup. Removed only this project's Git connection using Vercel CLI and verified `link` is now absent, preserving the approved manual prebuilt workflow; the repository and global GitHub integration were not changed.

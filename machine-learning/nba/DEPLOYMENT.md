@@ -1,5 +1,12 @@
 # Vercel deployment readiness — 2026-11-09
 
+## Verified existing production release — current status
+
+**Live:** [NBA Player Similarity](https://nba-player-similarity.vercel.app). Existing production deployment `dpl_DR1p9RK7iMfGvK6ttgE615DTm8Yk` is READY in the original project, using snapshot `32de55821ff743229801f546838596b9` (457 players/results). This verification task did not deploy or create a project. Public HTTP and all 8 desktop/mobile browser smoke tests passed without login; manifest/index and five representative results passed integrity checks, referenced JS/CSS loaded, and unknown routes returned 404. The HTML matches the validated isolated launch bundle. Vercel appends a cookie-opt-in toolbar loader to the otherwise identical webpack runtime; other referenced asset bytes match. Hobby/public settings and absence of Git integration were reverified. No Python API, dataset/model rebuild, automatic Git deploy, paid service or scheduled refresh was used.
+
+The pending-confirmation/not-deployed statements below are **historical setup notes**, superseded by this verified status. See the latest WORKPLAN production entry for deployment-specific URL, actual smoke-test evidence and remaining frozen-data limitations. Use the public URL above for portfolio links. Future changes still use the documented manual prebuilt workflow; do not redeploy merely to repeat verification.
+
+
 ## Superseding launch decision
 
 The user now authorizes a free, noncommercial, public personal portfolio release on Vercel Hobby if eligible. The user explicitly accepts the remaining NBA licensing uncertainty and directs no further licensing research; this does not assert publication permission. Prior rights-clearance blocker text below records the readiness-review state and is superseded for execution by this decision. Guide login/linking and verify hosting settings, but **obtain final user confirmation before production upload**. Then verify the actual public URL and update WORKPLAN. No paid services or automation. The launch bundle is `artifacts/vercel/2026-11-09-launch/`, freshly built with the accepted intro removal; the earlier readiness bundle is retained unchanged.
