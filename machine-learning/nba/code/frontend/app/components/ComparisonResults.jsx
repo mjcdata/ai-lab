@@ -3,6 +3,7 @@ import { ComparisonCard } from "./ComparisonCard";
 
 export function ComparisonResults({
   selected,
+  resultHeadingRef,
   mode,
   result,
   loading,
@@ -10,7 +11,7 @@ export function ComparisonResults({
   onRetry,
 }) {
   return (
-    <section className="results" aria-live="polite" aria-busy={loading}>
+    <section className="results" aria-label="Player comparisons" aria-busy={loading}>
       <div className="results-heading">
         <span className="section-label">02 / EXPLORE THE COMPARISONS</span>
         <span className="distance-key">PER 36 MINUTES</span>
@@ -20,7 +21,7 @@ export function ComparisonResults({
           <div className="court" aria-hidden="true">
             <div />
           </div>
-          <h2>Every player has a neighborhood.</h2>
+          <h2>Your comparisons appear here.</h2>
           <p>
             Select a player to explore their five closest statistical
             comparisons.
@@ -29,7 +30,7 @@ export function ComparisonResults({
         </div>
       )}
       {loading && (
-        <div className="empty">
+        <div className="empty" role="status">
           <div className="spinner" />
           <h2>Finding statistical neighbors…</h2>
           <p>Comparing six statistics standardized within each season.</p>
@@ -48,7 +49,7 @@ export function ComparisonResults({
         <>
           <div className="reference">
             <p className="eyebrow">REFERENCE PLAYER</p>
-            <h2>{result.reference.name}</h2>
+            <h2 ref={resultHeadingRef} tabIndex={-1}>{result.reference.name}</h2>
             <div className="exposure">
               <span>
                 <strong>{result.reference.games}</strong> games

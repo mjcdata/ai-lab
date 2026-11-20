@@ -1,5 +1,20 @@
 # NBA Player Similarity — Work Breakdown Structure (WBS)
 
+## Mobile UI and component refactoring — CEO PR review pending
+
+Explicit user approval requests a feature branch and pull request for this task, overriding the usual direct-to-main workflow. Implemented on `feat/nba-mobile-ui` from current `origin/main` in an isolated worktree; the original local edit remains untouched.
+
+- [x] Extract SiteHeader, Headline and SiteFooter; retain PlayerSearch, ComparisonResults and ComparisonCard. Page owns shared state/data requests and selection focus. No dependencies or duplicate mobile/desktop components.
+- [x] Black/white GitHub link replaces the season badge; shared header fits a 320px viewport. Removed interface arrow glyphs.
+- [x] Requested headline/description precede a prominent Find your player field. Empty/whitespace queries show no names; typing filters immediately without the former debounce; clearing hides rows. Friendly no-match and existing error/retry states remain.
+- [x] Native keyboard-accessible player buttons have hover, focus and pressed states. Loaded results receive heading focus; mobile scrolling honors reduced motion. Editing a different query while a prior selection loads does not steal input focus.
+- [x] Production static build, 7 frontend Node tests and 16 Chromium browser cases passed on desktop/mobile, including keyboard selection, focus, reduced motion, narrow header/GitHub navigation and existing reference/comparison explanations.
+- [x] Before production mobile and after local mobile/desktop screenshots captured under `code/frontend/review/` for PR review; screenshots are outside the public export.
+- [ ] CEO review and merge approval. Do not merge or deploy as part of this task.
+
+Only frontend/UI documentation and review evidence changed. Snapshot loader, similarity calculations and NBA datasets are unchanged; the build stages the existing validated snapshot without generating data. Existing production release remains untouched. No Vercel deployment or automatic deployment enablement. Physical-device/Safari behavior has not been tested; browser coverage is Chromium at desktop/mobile sizes and 320px header width.
+
+
 ## Verified production release
 
 The current task found an existing **READY production deployment** in the approved Vercel project and verified it without creating another deployment. This section supersedes older pending-confirmation, empty-history and not-deployed statements below, which remain historical setup records.
