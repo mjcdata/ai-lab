@@ -12,7 +12,7 @@ export function PlayerSearch({
 }) {
   return (
     <aside className="picker">
-      <label htmlFor="search">Find your player</label>
+      <label htmlFor="search">Find your player (current season stats 26-27)</label>
       <div className="search-box">
         <span aria-hidden="true">⌕</span>
         <input
