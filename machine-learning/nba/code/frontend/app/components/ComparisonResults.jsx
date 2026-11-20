@@ -13,7 +13,7 @@ export function ComparisonResults({
   return (
     <section className="results" aria-label="Player comparisons" aria-busy={loading}>
       <div className="results-heading">
-        <span className="section-label">02 / EXPLORE THE COMPARISONS</span>
+        <span className="section-label">EXPLORE THE COMPARISONS</span>
         <span className="distance-key">PER 36 MINUTES</span>
       </div>
       {!selected && (

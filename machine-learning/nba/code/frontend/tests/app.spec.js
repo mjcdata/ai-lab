@@ -25,6 +25,7 @@ test('current-to-historical per36 search, seasonal matches and six-stat explanat
  await expect(page.locator('.warnings')).toContainText('player seasons excluded');
  await expect(page.locator('main')).not.toContainText('player-season');
  await expect(page.locator('main')).not.toContainText('season-relative');
+ await expect(page.locator('.results-heading')).not.toContainText('02 /');
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBeTruthy();
  expect(errors).toEqual([]);
 });
