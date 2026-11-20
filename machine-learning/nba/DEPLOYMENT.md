@@ -1,5 +1,12 @@
 # Vercel deployment readiness — 2026-11-09
 
+## Current production — approved PR #13 release
+
+[Public app](https://nba-player-similarity.vercel.app) now serves READY production deployment `dpl_BjyfY7b9YwedT8reQrDXwcJ64rm3`, manually built and uploaded from merged-main commit `872119845cf4e72f06fdb800f198f82242514bb3` after explicit approval of PR #13 Preview head `bef0bb407795f9c9bb0fa05ab4a2589a0b5e2301`. The PR is merged; merged-main CI passed. The existing snapshot `32de55821ff743229801f546838596b9` remains unchanged. The isolated release package is under ignored `artifacts/vercel/pr13-8721198-production/`.
+
+All 16 production desktop/mobile browser cases and direct revised-copy/search/selection checks passed without login. Git auto-deploy remains disabled, Hobby is retained and no new project, data rebuild or model change was made. See WORKPLAN for the full verification record. Older deployment IDs and pending-confirmation notes below are historical; future releases still require explicit authorization and the manual prebuilt workflow.
+
+
 ## Verified existing production release — current status
 
 **Live:** [NBA Player Similarity](https://nba-player-similarity.vercel.app). Existing production deployment `dpl_DR1p9RK7iMfGvK6ttgE615DTm8Yk` is READY in the original project, using snapshot `32de55821ff743229801f546838596b9` (457 players/results). This verification task did not deploy or create a project. Public HTTP and all 8 desktop/mobile browser smoke tests passed without login; manifest/index and five representative results passed integrity checks, referenced JS/CSS loaded, and unknown routes returned 404. The HTML matches the validated isolated launch bundle. Vercel appends a cookie-opt-in toolbar loader to the otherwise identical webpack runtime; other referenced asset bytes match. Hobby/public settings and absence of Git integration were reverified. No Python API, dataset/model rebuild, automatic Git deploy, paid service or scheduled refresh was used.

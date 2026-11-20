@@ -1,5 +1,30 @@
 # NBA Player Similarity — Work Breakdown Structure (WBS)
 
+## PR #13 approved, merged and deployed to production
+
+User explicitly approved the live Preview and authorized merge plus production deployment. Before merging, PR head `bef0bb407795f9c9bb0fa05ab4a2589a0b5e2301` matched approved Preview `dpl_BsAFtfTrhZiwekiat9Q3U6YXC6zK` exactly. GitHub reported a clean merge, no branch-protection/ruleset required checks, no failed status/check runs and no PR-triggered workflow. Re-ran 7 frontend unit tests and all 16 approved-Preview browser cases successfully. No checks were bypassed or repository protections changed.
+
+- **PR:** https://github.com/mjcdata/ai-lab/pull/13 — merged/closed.
+- **Merge commit / deployed source:** `872119845cf4e72f06fdb800f198f82242514bb3`.
+- **Merged-main CI:** [AI Lab CI passed](https://github.com/mjcdata/ai-lab/actions/runs/44762385133).
+- **Production deployment:** `dpl_BjyfY7b9YwedT8reQrDXwcJ64rm3` — READY, target production.
+- **Public URL:** https://nba-player-similarity.vercel.app
+- **Deployment-specific URL:** https://nba-player-similarity-asr27jmud-malcolmjconnors-projects.vercel.app
+- **Snapshot:** `32de55821ff743229801f546838596b9` — existing 457-player snapshot, reused without generation or data acquisition.
+- **Project:** existing `nba-player-similarity` / `prj_1ElLC4mZqX42r6YHyej0vegnrSS6`, workspace `malcolmjconnors-projects`, Hobby. Git connection remains absent; automatic Git deployment remains disabled.
+
+Fetched merged main and built the exact merge commit in a separate detached worktree. Its source tree is identical to the approved PR head. Static export and isolated package passed validation: 491 public files / 6,598,753 bytes, no functions or Python API. All staged snapshot assets match the approved Preview byte-for-byte. Deployed the package manually with pinned Vercel CLI 65.14.0 using `deploy --prebuilt --prod` and metadata recording the merge source commit. User's original uncommitted work was preserved; no new project, model change, dataset refresh, paid service or automation.
+
+**Production verification:** Vercel API confirms READY/production, source commit above and canonical production alias. All **16 Chromium desktop/mobile regression cases passed against the public production URL** in fresh browser contexts. Additional direct checks at 390×844 and 1440×1000 confirmed HTTP 200 without login, the headline “Every player has a statistical neighbor.”, search sentence “Search 2026–27 NBA player stats to find their closest statistical matches from NBA history.” above the input, no duplicate visible search label or divider above search, no player suggestions on empty input, suggestions after typing Curry, selectable Stephen Curry and five historical comparisons. Reference values, per-stat explanations, exposure warnings, keyboard focus/reduced motion, GitHub navigation, loading/error/retry/empty states and 320px header fit also passed. Public snapshot pointer/manifest integrity checks passed. Physical-device/Safari validation was not performed.
+
+- [x] CEO approval, approved-head match, merge and successful merged-main CI verified.
+- [x] Manual production release built from merged main, with frozen local snapshot.
+- [x] Public mobile/desktop headline, search and historical comparisons verified.
+- [x] Production URL/deployment/source/snapshot recorded; this section supersedes older pending-review and previous-production entries below.
+
+**Next action:** User can review/share the updated production URL. No remaining release approval or merge action is required for PR #13.
+
+
 ## Mobile UI and component refactoring — CEO PR review pending
 
 Explicit user approval requests a feature branch and pull request for this task, overriding the usual direct-to-main workflow. Implemented on `feat/nba-mobile-ui` from current `origin/main` in an isolated worktree; the original local edit remains untouched.
