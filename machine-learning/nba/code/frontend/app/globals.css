@@ -17,10 +17,9 @@ h1 em{font-family:Georgia,serif;font-weight:normal;color:var(--orange)}
 .lede{max-width:440px;font-size:15px;line-height:1.7;color:var(--muted);position:absolute;right:0;top:92px}
 .scope{font-size:11px;color:var(--muted);margin-top:27px}
 .dot{display:inline-block;background:#7d9669;border-radius:50%;height:6px;width:6px;margin-right:8px}
-.workspace{display:grid;grid-template-columns:285px minmax(0,1fr);border-top:1px solid var(--ink);align-items:start}
-.picker{padding:25px 25px 0 0;position:sticky;top:0}
+.workspace{display:grid;grid-template-columns:285px minmax(0,1fr);align-items:start}
+.picker{padding:0 25px 0 0;position:sticky;top:0}
 .section-label{font-size:10px;letter-spacing:1.2px;font-weight:bold;display:flex;justify-content:space-between}
-.picker label{display:block;font-size:13px;margin:28px 0 10px}
 .search-box{display:flex;border:1px solid #b7c2bd;background:var(--white);padding:11px;gap:8px}
 .search-box input{width:100%;min-width:0;border:0;background:transparent;font-size:12px;color:var(--ink)}
 .search-box input:focus{outline:none}
@@ -103,8 +102,7 @@ footer>span{font-size:10px;color:var(--muted)}
 .intro{padding:35px 0 30px}
 h1{letter-spacing:-1.7px}
 .workspace{display:block}
-.picker{position:static;padding:20px 0}
-.picker label{margin-top:20px}
+.picker{position:static;padding:0 0 20px}
 .roster{max-height:200px}
 .results{border-left:0;border-top:1px solid var(--ink);padding:20px 0;min-height:400px}
 .results-heading{flex-direction:row;align-items:center}
@@ -142,7 +140,6 @@ details{padding:13px 14px}
 .headline{padding:28px 0 22px}
 .headline h1{font-size:clamp(27px,3vw,40px);line-height:1.18;letter-spacing:-1px;max-width:36ch}
 .headline p{margin:10px 0 0;font-size:14px;line-height:1.6;color:var(--muted)}
-.picker label{margin:0 0 10px;font-weight:700;font-size:14px}
 .search-box{width:100%;min-height:50px;border:2px solid #8a9c96;border-radius:5px;align-items:center;padding:10px 12px}
 .search-box:focus-within{border-color:var(--orange);outline:3px solid #ed9a58;outline-offset:3px}
 .search-box input{font-size:16px;min-height:24px}
@@ -161,8 +158,6 @@ details{padding:13px 14px}
   .headline{padding:22px 0 16px}
   .headline h1{font-size:28px;letter-spacing:-.6px}
   .headline p{font-size:14px;margin-top:8px}
-  .picker{padding:16px 0 20px}
-  .picker label{margin:0 0 10px}
   .roster{margin-top:12px;max-height:240px}
   .roster:empty{margin-top:0}
 }

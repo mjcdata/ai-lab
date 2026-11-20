@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-const label='Find your player (current season stats 26-27)';
+const label='Search NBA players';
 async function select(page,name='Curry') {
  await page.getByLabel(label).fill(name);
  await page.getByRole('button',{name:name==='Curry'?/Stephen Curry/:/Bronny James/}).click();
