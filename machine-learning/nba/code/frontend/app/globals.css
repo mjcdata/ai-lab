@@ -17,10 +17,9 @@ h1 em{font-family:Georgia,serif;font-weight:normal;color:var(--orange)}
 .lede{max-width:440px;font-size:15px;line-height:1.7;color:var(--muted);position:absolute;right:0;top:92px}
 .scope{font-size:11px;color:var(--muted);margin-top:27px}
 .dot{display:inline-block;background:#7d9669;border-radius:50%;height:6px;width:6px;margin-right:8px}
-.workspace{display:grid;grid-template-columns:285px minmax(0,1fr);border-top:1px solid var(--ink);align-items:start}
-.picker{padding:25px 25px 0 0;position:sticky;top:0}
+.workspace{display:grid;grid-template-columns:285px minmax(0,1fr);align-items:start}
+.picker{padding:0 25px 0 0;position:sticky;top:0}
 .section-label{font-size:10px;letter-spacing:1.2px;font-weight:bold;display:flex;justify-content:space-between}
-.picker label{display:block;font-size:13px;margin:28px 0 10px}
 .search-box{display:flex;border:1px solid #b7c2bd;background:var(--white);padding:11px;gap:8px}
 .search-box input{width:100%;min-width:0;border:0;background:transparent;font-size:12px;color:var(--ink)}
 .search-box input:focus{outline:none}
@@ -103,8 +102,7 @@ footer>span{font-size:10px;color:var(--muted)}
 .intro{padding:35px 0 30px}
 h1{letter-spacing:-1.7px}
 .workspace{display:block}
-.picker{position:static;padding:20px 0}
-.picker label{margin-top:20px}
+.picker{position:static;padding:0 0 20px}
 .roster{max-height:200px}
 .results{border-left:0;border-top:1px solid var(--ink);padding:20px 0;min-height:400px}
 .results-heading{flex-direction:row;align-items:center}
@@ -132,3 +130,36 @@ details{padding:13px 14px}
 .reference-stats dt{font-size:9px;letter-spacing:1px;color:var(--muted)}
 .reference-stats dd{font-size:21px;font-variant-numeric:tabular-nums;margin:8px 0 0;letter-spacing:-.5px}
 @media(max-width:650px){.reference-stats{grid-template-columns:repeat(3,minmax(0,1fr))}.reference-stats>div{padding:12px}}
+
+/* Shared header and search-first layout, with the same controls at every width. */
+.brand{display:inline-flex;align-items:center;gap:8px;min-width:0}
+.brand .mark{margin:0;flex-shrink:0}
+.github-button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 14px;background:#111;color:#fff;text-decoration:none;font-size:12px;font-weight:700;white-space:nowrap;border-radius:5px;flex-shrink:0}
+.github-button:hover{background:#303030}
+.github-button svg{flex-shrink:0}
+.headline{padding:28px 0 22px}
+.headline h1{font-size:clamp(27px,3vw,40px);line-height:1.18;letter-spacing:-1px;max-width:36ch}
+.headline p{margin:10px 0 0;font-size:14px;line-height:1.6;color:var(--muted)}
+.search-box{width:100%;min-height:50px;border:2px solid #8a9c96;border-radius:5px;align-items:center;padding:10px 12px}
+.search-box:focus-within{border-color:var(--orange);outline:3px solid #ed9a58;outline-offset:3px}
+.search-box input{font-size:16px;min-height:24px}
+.player-option{border-radius:4px;min-height:56px;transition:background-color .12s ease}
+.player-option:focus-visible{outline-offset:-3px;background:#e9ece6}
+.player-option:active{background:#d9e1d7}
+.player-option.active:focus-visible{background:var(--ink)}
+.reference h2{scroll-margin-top:24px}
+.reference h2:focus{outline:3px solid #ed9a58;outline-offset:5px;border-radius:2px}
+@media(max-width:650px){
+  main{padding:0 16px}
+  .masthead{height:auto;min-height:76px;padding:14px 0;gap:12px}
+  .brand{font-size:12px;letter-spacing:.2px;max-width:180px;line-height:1.4}
+  .brand .mark{font-size:20px;margin:0}
+  .github-button{padding:10px 12px;font-size:12px}
+  .headline{padding:22px 0 16px}
+  .headline h1{font-size:28px;letter-spacing:-.6px}
+  .headline p{font-size:14px;margin-top:8px}
+  .roster{margin-top:12px;max-height:240px}
+  .roster:empty{margin-top:0}
+}
+@media(prefers-reduced-motion:reduce){.player-option{transition:none}}
+.player-option.active:active{background:#203f4b}

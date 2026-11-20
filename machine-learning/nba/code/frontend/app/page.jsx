@@ -1,5 +1,8 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { SiteHeader } from "./components/SiteHeader";
+import { Headline } from "./components/Headline";
+import { SiteFooter } from "./components/SiteFooter";
 import { PlayerSearch } from "./components/PlayerSearch";
 import { ComparisonResults } from "./components/ComparisonResults";
 import { searchPlayers, loadComparisons } from "../lib/data";
@@ -7,7 +10,7 @@ import { searchPlayers, loadComparisons } from "../lib/data";
 export default function Home() {
   const [query, setQuery] = useState("");
   const [players, setPlayers] = useState([]);
-  const [searchStatus, setSearchStatus] = useState("loading");
+  const [searchStatus, setSearchStatus] = useState("ready");
   const [searchError, setSearchError] = useState("");
   const [selected, setSelected] = useState(null);
   const mode = "per36";
@@ -15,28 +18,31 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [retry, setRetry] = useState(0);
+  const resultHeadingRef = useRef(null);
+  const focusOnResultRef = useRef(false);
   useEffect(() => {
     const controller = new AbortController();
     setSearchStatus("loading");
     setSearchError("");
     setPlayers([]);
-    const timer = setTimeout(() => {
-      searchPlayers(query, controller.signal)
-        .then((data) => {
+    if (!query.trim()) {
+      setSearchStatus("ready");
+      return () => controller.abort();
+    }
+    searchPlayers(query, controller.signal)
+      .then((data) => {
+        if (!controller.signal.aborted) {
           setPlayers(data.players);
           setSearchStatus("ready");
-        })
-        .catch((err) => {
-          if (err.name !== "AbortError") {
-            setSearchError(err.message);
-            setSearchStatus("error");
-          }
-        });
-    }, 220);
-    return () => {
-      clearTimeout(timer);
-      controller.abort();
-    };
+        }
+      })
+      .catch((err) => {
+        if (!controller.signal.aborted && err.name !== "AbortError") {
+          setSearchError(err.message);
+          setSearchStatus("error");
+        }
+      });
+    return () => controller.abort();
   }, [query, retry]);
   useEffect(() => {
     if (!selected) return;
@@ -54,48 +60,51 @@ export default function Home() {
       });
     return () => controller.abort();
   }, [selected, mode, retry]);
+  useEffect(() => {
+    const heading = resultHeadingRef.current;
+    if (!result || !heading || !focusOnResultRef.current) return;
+    focusOnResultRef.current = false;
+    heading.focus({ preventScroll: true });
+    if (window.matchMedia("(max-width: 650px)").matches) {
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      heading.scrollIntoView({ behavior: reducedMotion ? "instant" : "smooth", block: "start" });
+    }
+  }, [result]);
   return (
     <main>
-      <header className="masthead">
-        <a href="/" className="brand">
-          <span className="mark">◉</span> NBA Player Similarity
-        </a>
-        <span className="edition">AI LAB / EXPERIMENT 001</span>
-        <span className="season">2026–27 → HISTORICAL SEASONS</span>
-      </header>
+      <SiteHeader />
+      <Headline />
       <div className="workspace">
         <PlayerSearch
           query={query}
-          onQueryChange={setQuery}
+          onQueryChange={(value) => {
+            focusOnResultRef.current = false;
+            setQuery(value);
+          }}
           players={players}
           searchStatus={searchStatus}
           searchError={searchError}
           selected={selected}
-          onSelect={setSelected}
+          onSelect={(player) => {
+            focusOnResultRef.current = true;
+            setSelected({ ...player });
+          }}
           onRetry={() => setRetry((n) => n + 1)}
         />
         <ComparisonResults
           selected={selected}
+          resultHeadingRef={resultHeadingRef}
           mode={mode}
           result={result}
           loading={loading}
           error={error}
-          onRetry={() => setRetry((n) => n + 1)}
+          onRetry={() => {
+            focusOnResultRef.current = true;
+            setRetry((n) => n + 1);
+          }}
         />
       </div>
-      <footer>
-        <strong>HOW IT WORKS</strong>
-        <p>
-          One record per player season →
-          standardized six-stat profile → equal-weight Euclidean distance.
-          Within-season population Z-scores. Per-36 only. No playing-time cutoff.
-        </p>
-        <span>
-          Local research MVP · No shooting efficiency, position or age features
-          · Distance is not a probability.
-        </span>
-        <p>Statistics source: <a href="https://www.nba.com/stats">NBA.com</a>. Independent research project.</p>
-      </footer>
+      <SiteFooter />
     </main>
   );
 }
