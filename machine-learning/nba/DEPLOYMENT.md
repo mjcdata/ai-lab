@@ -1,5 +1,17 @@
 # Vercel deployment readiness — 2026-11-09
 
+## Current-season refresh and publish workflow
+
+See [REFRESH.md](REFRESH.md) for the guarded manual command, verification gates,
+interruption recovery and rollback. It reuses this existing project and static
+packager, stages a production-environment upload with `--prebuilt --prod
+--skip-domain`, tests that exact deployment, then promotes it and verifies the
+canonical public URL. It checks Hobby/public/no-Git settings without changing
+them. No refresh or deployment was executed during implementation; approval and
+merge of the workflow PR remain pending. Existing release records below are
+unchanged. No schedule or automatic Git deployment is added.
+
+
 ## Current production — approved PR #13 release
 
 [Public app](https://nba-player-similarity.vercel.app) now serves READY production deployment `dpl_BjyfY7b9YwedT8reQrDXwcJ64rm3`, manually built and uploaded from merged-main commit `872119845cf4e72f06fdb800f198f82242514bb3` after explicit approval of PR #13 Preview head `bef0bb407795f9c9bb0fa05ab4a2589a0b5e2301`. The PR is merged; merged-main CI passed. The existing snapshot `32de55821ff743229801f546838596b9` remains unchanged. The isolated release package is under ignored `artifacts/vercel/pr13-8721198-production/`.

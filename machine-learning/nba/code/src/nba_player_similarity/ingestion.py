@@ -134,14 +134,31 @@ def _normalize(rows: list[dict]) -> list[dict]:
     return clean.to_dict(orient="records")
 
 
-def fetch_season(season: str) -> list[dict]:
+def fetch_season(season: str, *, player_or_team: str = "P") -> list[dict]:
     """Live NBA request: call only from a user-initiated local command."""
+    if player_or_team not in ("P", "T"):
+        raise ValueError("player_or_team must be P or T")
     from nba_api.stats.endpoints import leaguegamelog
     frame = leaguegamelog.LeagueGameLog(
-        season=season, player_or_team_abbreviation="P", season_type_all_star="Regular Season",
+        season=season, player_or_team_abbreviation=player_or_team, season_type_all_star="Regular Season",
         timeout=20,
     ).get_data_frames()[0]
     return _normalize(frame.to_dict(orient="records"))
+
+
+def fetch_with_retries(season: str, *, fetcher=fetch_season, attempts=3, backoff=2, sleep=time.sleep):
+    """Shared bounded retrieval policy for player and team logs; no writes."""
+    if attempts < 1 or not math.isfinite(backoff) or backoff < 0:
+        raise ValueError("Attempts must be positive and backoff finite/nonnegative")
+    for attempt in range(attempts):
+        try:
+            return fetcher(season)
+        except ImportError:
+            raise
+        except Exception as exc:
+            if attempt + 1 == attempts:
+                raise RuntimeError(f"{season}: fetch failed after {attempts} attempts: {exc}") from exc
+            sleep(min(60, backoff * 2 ** min(attempt, 6)))
 
 
 def ingest(season: str, root: Path, *, fetcher=fetch_season, refresh: bool = False,
@@ -155,16 +172,7 @@ def ingest(season: str, root: Path, *, fetcher=fetch_season, refresh: bool = Fal
     if cached:
         rows = json.loads(raw_path.read_text(encoding="utf-8"))
     else:
-        for attempt in range(attempts):
-            try:
-                rows = fetcher(season)
-                break
-            except ImportError:
-                raise  # Missing optional dependencies are not transient.
-            except Exception as exc:
-                if attempt + 1 == attempts:
-                    raise RuntimeError(f"{season}: fetch failed after {attempts} attempts: {exc}") from exc
-                sleep(min(60, backoff * 2 ** min(attempt, 6)))
+        rows = fetch_with_retries(season, fetcher=fetcher, attempts=attempts, backoff=backoff, sleep=sleep)
     report = validate_rows(rows, season)
     report["source"] = "cache" if cached else "nba_api"
     _atomic_json(report_path, report)

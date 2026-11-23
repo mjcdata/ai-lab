@@ -1,5 +1,49 @@
 # NBA Player Similarity — Work Breakdown Structure (WBS)
 
+## Manual NBA data refresh and publish workflow — implementation review
+
+**Scope:** Explicit user request authorizes a feature branch/PR and offline
+implementation only. No live data refresh, NBA request, production upload,
+settings change, scheduler or merge is authorized for this task.
+
+- [x] Discoverable “Refresh NBA data” instructions and reusable uv coordinator.
+- [x] Stage current player/team logs with existing nba_api ingestion/retries;
+  reuse historical caches unchanged and retain baseline backups/hashes.
+- [x] Reconcile completed games, team/player points, dates and prior row keys;
+  preserve missing historical statistics and existing scoring/exclusions.
+- [x] Validate snapshot/source/model checksums and every result against direct
+  model output; build the existing static Next.js app and isolated package.
+- [x] Guard existing Vercel project/Hobby/public/no-Git settings; smoke-test staged
+  production artifact before promotion, verify public assets and mobile/desktop
+  selection, record actual receipts and roll back failed public verification.
+- [x] Journal stages/owned child processes, lock overlaps, reconcile interrupted
+  uploads by run metadata and resume partial local activation. Stop on uncertain
+  recovery or concurrent changes rather than blind retries/overwrites.
+- [x] Document invocation, local execution, validation, publishing, recovery and
+  future weekly scheduling prerequisites in REFRESH.md. No scheduling enabled.
+- [ ] CEO review/merge of implementation PR.
+- [ ] First explicitly initiated live refresh and production verification after
+  merge. Offline fixtures/local frozen-snapshot checks do not establish live
+  nba_api availability, Vercel authentication, promotion or rollback success.
+
+**Validation:** 86 offline Python tests passed (51 existing plus 35 refresh,
+validation and recovery tests); 7 frontend Node tests and the production static
+build passed. All 16 existing Chromium desktop/mobile cases passed on rerun;
+the initial run had one timeout waiting for a mocked error response (15 passed).
+The new dynamic smoke also passed both sizes and checked all 458 indexed assets
+for the existing 457-player snapshot. The isolated static package contains 491
+files / 6,598,753 bytes. Tests reuse frozen snapshot
+`32de55821ff743229801f546838596b9`; no new NBA snapshot or source data was generated.
+The pre-existing Starlette/httpx test deprecation warning remains. The new live
+adapters use offline mocks/temporary fixtures, so live fetch, upload, promotion
+and rollback still require the first explicitly requested real run. Existing production remains unchanged. The original local
+UI edit is preserved in the original checkout; work uses an isolated worktree.
+
+**Next action:** Review the workflow PR. After merge, explicitly request “Refresh
+NBA data” to run the complete guarded manual workflow. No scoring, frontend UI,
+NBA datasets or generated snapshot assets are committed by this implementation.
+
+
 ## PR #13 approved, merged and deployed to production
 
 User explicitly approved the live Preview and authorized merge plus production deployment. Before merging, PR head `bef0bb407795f9c9bb0fa05ab4a2589a0b5e2301` matched approved Preview `dpl_BsAFtfTrhZiwekiat9Q3U6YXC6zK` exactly. GitHub reported a clean merge, no branch-protection/ruleset required checks, no failed status/check runs and no PR-triggered workflow. Re-ran 7 frontend unit tests and all 16 approved-Preview browser cases successfully. No checks were bypassed or repository protections changed.

@@ -54,3 +54,8 @@ End each task with a brief, self-contained report using these labels:
 - **Next action:** The concrete next step and who should take it.
 
 Use plain language and include enough context that the user need not open repository files. Keep commit hashes and file links as supporting details, not the main message. If no work was performed, explain why and identify the next actionable step; never report only Git status. For scheduled monitoring, honor its quiet-notification rules instead of sending routine completion reports.
+
+## NBA refresh requests
+
+For “Refresh NBA data”, follow `machine-learning/nba/AGENTS.md` and its guarded
+manual workflow. Run on the Mac; never substitute a GitHub Action or scheduler.
