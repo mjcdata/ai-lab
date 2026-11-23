@@ -1,5 +1,64 @@
 # NBA Player Similarity — Work Breakdown Structure (WBS)
 
+## Verified manual current-season refresh — 2026-11-23
+
+The user explicitly requested “Refresh nba data” after approving/merging PR #14.
+Ran the guarded coordinator on the Mac from clean merged main
+`09b74c36dcc274d7a500a33ab633732d002c6b0d`, with the existing local data/snapshot
+paths. The original checkout's uncommitted UI edit remains untouched.
+
+- **Public URL:** https://nba-player-similarity.vercel.app
+- **Deployment:** `dpl_HMjPXdFsqwXFEWiRBvi7yMJi55XY` — verified staged artifact,
+  promoted and verified at the canonical public URL.
+- **Deployment URL:** https://nba-player-similarity-z81cd7uz7-malcolmjconnors-projects.vercel.app
+- **Snapshot:** `04fa92fab5ae4ee681545b57777ef19e`, 472 current players/results;
+  generated locally using the unchanged per-36 season Z-score model.
+- **Run:** `f8188c17eec24a81afafe236a589f050`; completed at
+  `2026-11-23T23:18:43Z`. Local ignored release.json contains the full receipt.
+- **Current data:** 5,545 player-game rows, 248 completed games / 496 team-game
+  records, through **2026-11-22**. All 3,171 prior player/game keys retained.
+  Player/team dates, game coverage and point totals reconcile; zero duplicate
+  rows, missing six-stat/minute values or quality warnings.
+- **Eligibility:** 474 current profiles, 472 eligible, 2 excluded by existing
+  reliability rules: Jahmai Mashack and LJ Cryer have positive statistics in
+  zero-minute source rows. No new threshold or zero imputation was applied.
+- **History:** All 80 historical cache hashes unchanged; 19,134 eligible
+  historical profiles. No historical download or refresh.
+
+**Checks run for this refresh:** 86 offline Python tests and 7 frontend Node
+unit tests passed; production static build and isolated packaging passed (506
+files / 6,811,357 bytes). Every exported result passed exact direct-model parity
+and source/model/snapshot/package checks. Local, deployment-specific and public
+Chromium smoke checks passed at 390px and 1440px: all 473 indexed snapshot assets
+matched size/hash and the exact expected manifest, unknown paths returned 404,
+anonymous search/selection loaded five historical comparisons, reference stats
+and all six explanations rendered, no runtime API or asset errors/overflow.
+The full 16-case browser regression suite was not rerun for this data-only
+refresh; its prior implementation results remain recorded below. The existing
+Starlette/httpx test-transport deprecation warning remains. No physical-device
+or Safari validation was performed.
+
+Hobby/public/no-Git settings passed the coordinator's checks. No paid service,
+project creation, methodology/UI change, auto-deploy or recurring schedule.
+Canonical current raw data and snapshot pointer were activated only after
+public verification. Prior snapshot `32de55821ff743229801f546838596b9`, raw backup,
+static bundle and prior deployment `dpl_BjyfY7b9YwedT8reQrDXwcJ64rm3` are retained
+for recovery. No rollback was needed or exercised.
+
+- [x] PR #14 CEO-approved and merged; manual workflow available on main.
+- [x] First explicitly initiated live refresh, staged/public verification and
+  local activation completed successfully.
+- [x] Actual deployment, snapshot, data date/counts and validation recorded.
+
+**Limitations:** Completeness is reconciled against the same NBA source's team
+logs and prior cached rows, not independently audited. Low-exposure volatility
+and incomplete early historical statistics remain model limitations. Data are
+static as of November 22; later changes require another explicit refresh.
+
+**Next action:** User can view/share the public app. Request “Refresh NBA data”
+for the next manual update; weekly scheduling remains separately unapproved.
+
+
 ## Manual NBA data refresh and publish workflow — implementation review
 
 **Scope:** Explicit user request authorizes a feature branch/PR and offline
@@ -21,9 +80,9 @@ settings change, scheduler or merge is authorized for this task.
   recovery or concurrent changes rather than blind retries/overwrites.
 - [x] Document invocation, local execution, validation, publishing, recovery and
   future weekly scheduling prerequisites in REFRESH.md. No scheduling enabled.
-- [ ] CEO review/merge of implementation PR.
-- [ ] First explicitly initiated live refresh and production verification after
-  merge. Offline fixtures/local frozen-snapshot checks do not establish live
+- [x] CEO approved and merged implementation PR #14 (see verified refresh above).
+- [x] First explicitly initiated live refresh and production verification after
+  merge (2026-11-23; see verified refresh above). Offline fixtures/local frozen-snapshot checks do not establish live
   nba_api availability, Vercel authentication, promotion or rollback success.
 
 **Validation:** 86 offline Python tests passed (51 existing plus 35 refresh,

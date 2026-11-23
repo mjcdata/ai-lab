@@ -6,12 +6,11 @@
 is publicly deployed on the existing Vercel Hobby project. See [DEPLOYMENT.md](DEPLOYMENT.md)
 for verified release history and the manual prebuilt process.
 
-**Manual data refresh:** Say **“Refresh NBA data”** in local Codex after the
-workflow PR is approved/merged, or follow [REFRESH.md](REFRESH.md). The guarded
+**Manual data refresh:** Say **“Refresh NBA data”** in local Codex, or follow [REFRESH.md](REFRESH.md). The guarded
 Mac workflow stages current-season data, validates coverage and exact model
 parity, builds/tests a static release, verifies it before promotion and retains
-recovery evidence. No schedule or Git auto-deploy is enabled. Its implementation
-has been tested offline; no live refresh/deployment was run for that change.
+recovery evidence. No schedule or Git auto-deploy is enabled. The first live refresh and public verification succeeded on 2026-11-23; see
+WORKPLAN.md for the verified release record.
 
 **Current methodology (approved 2026-11-08):** Compare 2026–27 season-to-date players against historical **player-season** records from 1946–47 through 2025–26. Per-36 statistics only; PTS, REB, AST, STL, BLK and TOV have equal weight. No career-stage alignment, minute window, per-game mode, minimum games/minutes cutoff, predictive model or scheduler. Public deployment uses the approved static architecture.
 
@@ -27,9 +26,23 @@ Local `data/reports/season-profiles.json` records exclusions by player, season a
 
 ## Current local results
 
-All **80 historical season caches** are present (1,389,756 raw rows); no historical fetch was needed for this change. Current-season availability was verified and 3,171 rows through **2026-11-08** were cached using the existing nba_api fetcher. There are 460 current player-seasons: **457 eligible**, 3 excluded. The historical pool has **19,134 eligible player-seasons**. Across history and current data, 6,605 player-seasons are excluded. The earliest usable complete six-stat profiles are from **1977–78**; having raw seasons back to 1946 does not imply comparisons can cover them.
+All **80 historical season caches** remain unchanged (1,389,756 raw rows).
+The 2026-11-23 manual refresh cached **5,545 current player-game rows** across
+248 completed games, through **2026-11-22**. All 3,171 previous player/game keys
+are retained; team/player coverage and point totals reconcile without quality
+warnings or duplicates. There are 474 current profiles: **472 eligible**, 2
+excluded for positive statistics in zero-minute source rows (Jahmai Mashack and
+LJ Cryer). The historical pool remains **19,134 eligible records**. Across history
+and current data, 6,604 profiles are excluded. The earliest complete six-stat
+profiles remain 1977–78; raw caches back to 1946 do not imply usable comparisons
+for those early seasons. Historical coverage has not been independently audited.
 
-Examples from the current frozen snapshot (lower distance is closer): Stephen Curry → Tracy McGrady 2003–04 (0.610); Nikola Jokić → Grant Hill 1996–97 (0.687); Anthony Edwards → Paul Pierce 2000–01 (0.450). Bronny James has only 12 observed minutes and illustrates unstable tiny-sample rates. These are descriptive statistical matches, not claims of equivalent ability or style. Complete historical game coverage has not been independently verified.
+Current snapshot `04fa92fab5ae4ee681545b57777ef19e` is publicly verified. Examples
+(lower distance is closer): Stephen Curry → Michael Jordan 1996–97 (0.787);
+Nikola Jokić → Grant Hill 1996–97 (0.593); Anthony Edwards → Paul Pierce 2000–01
+(0.763). Bronny James has 18 observed minutes, illustrating tiny-sample
+instability. These matches describe statistics, not equivalent ability/style.
+Data and generated artifacts remain local/Git-ignored; prior releases are retained.
 
 ## Layout and local commands
 
@@ -89,7 +102,12 @@ pnpm build
 PLAYWRIGHT_BROWSERS_PATH=/private/tmp/nba-playwright pnpm test
 ```
 
-**Current validation:** 51 Python tests, 4 Node loader/staging tests and all 8 desktop/mobile browser cases passed; production static build passed. Initial browser attempts exposed test synchronization timing failures; after waiting explicitly for the roster/results to render, the full suite passed. The existing httpx/Starlette test transport deprecation warning remains.
+**Latest refresh validation (2026-11-23):** 86 Python tests, 7 Node tests,
+production static build and local/staged/public Chromium mobile/desktop smoke
+checks passed. All 473 indexed assets matched the refreshed snapshot's hashes.
+The full 16-case browser regression suite passed during workflow implementation;
+it was not rerun for this data-only refresh. The existing httpx/Starlette test
+transport deprecation warning remains. See WORKPLAN.md for deployment evidence.
 
 Python tests cover aggregation, independent per-season normalization, unit scaling invariance, missing/zero-minute/duplicate exclusions, small exposures, own-player exclusion, repeated historical players across seasons, deterministic ties, sparse results, explanation identities, API parity and snapshot failure safety. Loader tests cover schema/identity validation, per-game rejection, aborts/retries and corrupt snapshot staging. Browser tests cover search, reference stats/explanations, historical season labels, removed mode controls, limited-exposure warnings, desktop/mobile layout and loading/error/empty states. Real-source API/snapshot parity was checked for Curry, Jokić, Bronny James, Edwards and LeBron James; all 81 source hashes stayed unchanged during generation and validation.
 

@@ -2,9 +2,9 @@
 
 ## Status and invocation
 
-This manual Mac workflow is implemented for CEO review. **No live refresh or
-production deployment was performed to validate its implementation.** Merge
-approval is required before using it from approved main. There is no schedule,
+This manual Mac workflow was approved and merged in PR #14. Its first explicitly
+requested live refresh and public verification succeeded on 2026-11-23; see
+WORKPLAN.md for the actual deployment, snapshot and validation record. There is no schedule,
 Git deployment hook, new service or changed similarity methodology.
 
 Once approved, say **“Refresh NBA data”** in local Codex. Project AGENTS.md routes

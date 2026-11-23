@@ -1,5 +1,20 @@
 # Vercel deployment readiness — 2026-11-09
 
+## Current production — verified data refresh 2026-11-23
+
+[Public app](https://nba-player-similarity.vercel.app) serves verified deployment
+`dpl_HMjPXdFsqwXFEWiRBvi7yMJi55XY`, source main
+`09b74c36dcc274d7a500a33ab633732d002c6b0d`, snapshot
+`04fa92fab5ae4ee681545b57777ef19e` (472 players; data through 2026-11-22).
+The user initiated the approved workflow after merging PR #14. Staged production
+upload, candidate smoke, promotion, public mobile/desktop smoke and local cache
+activation succeeded. All 473 snapshot assets passed exact-manifest and checksum
+verification. Existing Hobby/public/no-Git project settings were retained.
+Previous snapshot/deployment/bundle and current raw backup remain available for
+recovery; no rollback was needed. See WORKPLAN.md for full validation and receipt.
+This entry supersedes the previous-production records below.
+
+
 ## Current-season refresh and publish workflow
 
 See [REFRESH.md](REFRESH.md) for the guarded manual command, verification gates,
@@ -7,9 +22,8 @@ interruption recovery and rollback. It reuses this existing project and static
 packager, stages a production-environment upload with `--prebuilt --prod
 --skip-domain`, tests that exact deployment, then promotes it and verifies the
 canonical public URL. It checks Hobby/public/no-Git settings without changing
-them. No refresh or deployment was executed during implementation; approval and
-merge of the workflow PR remain pending. Existing release records below are
-unchanged. No schedule or automatic Git deployment is added.
+them. PR #14 is approved and merged; the first explicitly requested live run
+succeeded on 2026-11-23, as recorded above. Older release records below are historical. No schedule or automatic Git deployment is added.
 
 
 ## Current production — approved PR #13 release
