@@ -1,3 +1,5 @@
+![NBA Player Similarity. Every player has a statistical neighbor.](readme-banner.png)
+
 # NBA Player Similarity — local season-based MVP
 
 **Deployment readiness (2026-11-09):** CEO accepted the MVP and approved public deployment; no deployment has been performed. See [Vercel readiness and exact manual instructions](DEPLOYMENT.md). The app uses static snapshots; a fresh Git checkout lacks ignored build inputs. Rights clearance and Vercel plan/account eligibility remain unresolved.
