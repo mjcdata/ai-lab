@@ -9,6 +9,7 @@
     "start": "python3 -m http.server 3000 --bind 127.0.0.1 --directory out",
     "test": "playwright test",
     "test:unit": "node --test tests/*.test.mjs",
+    "test:refresh": "node scripts/refresh-smoke.mjs",
     "package:vercel": "node scripts/prepare-vercel.mjs"
   },
   "dependencies": {

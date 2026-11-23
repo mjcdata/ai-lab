@@ -2,9 +2,18 @@
 
 # NBA Player Similarity — local season-based MVP
 
-**Deployment readiness (2026-11-09):** CEO accepted the MVP and approved public deployment; no deployment has been performed. See [Vercel readiness and exact manual instructions](DEPLOYMENT.md). The app uses static snapshots; a fresh Git checkout lacks ignored build inputs. Rights clearance and Vercel plan/account eligibility remain unresolved.
+**Production:** [NBA Player Similarity](https://nba-player-similarity.vercel.app)
+is publicly deployed on the existing Vercel Hobby project. See [DEPLOYMENT.md](DEPLOYMENT.md)
+for verified release history and the manual prebuilt process.
 
-**Current methodology (approved 2026-11-08):** Compare 2026–27 season-to-date players against historical **player-season** records from 1946–47 through 2025–26. Per-36 statistics only; PTS, REB, AST, STL, BLK and TOV have equal weight. No career-stage alignment, minute window, per-game mode, minimum games/minutes cutoff, predictive model, public deployment or scheduler.
+**Manual data refresh:** Say **“Refresh NBA data”** in local Codex after the
+workflow PR is approved/merged, or follow [REFRESH.md](REFRESH.md). The guarded
+Mac workflow stages current-season data, validates coverage and exact model
+parity, builds/tests a static release, verifies it before promotion and retains
+recovery evidence. No schedule or Git auto-deploy is enabled. Its implementation
+has been tested offline; no live refresh/deployment was run for that change.
+
+**Current methodology (approved 2026-11-08):** Compare 2026–27 season-to-date players against historical **player-season** records from 1946–47 through 2025–26. Per-36 statistics only; PTS, REB, AST, STL, BLK and TOV have equal weight. No career-stage alignment, minute window, per-game mode, minimum games/minutes cutoff, predictive model or scheduler. Public deployment uses the approved static architecture.
 
 ## Calculation and eligibility
 
