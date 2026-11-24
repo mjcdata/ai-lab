@@ -1,8 +1,8 @@
 import copy
 import unittest
 from nba_player_similarity.scaler_experiment import variant
-from nba_player_similarity.similarity import SeasonBaseline
-from test_similarity import cp
+from nba_player_similarity.legacy_similarity import SeasonBaseline
+from test_legacy_similarity import cp
 
 
 class ScalerExperimentTests(unittest.TestCase):

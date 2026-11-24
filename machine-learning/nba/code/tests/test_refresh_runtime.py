@@ -85,7 +85,7 @@ class RefreshRuntimeContractTests(unittest.TestCase):
         from nba_player_similarity.ingestion import _atomic_json
         from nba_player_similarity.refresh_validation import read,sha
         from nba_player_similarity.season_snapshot import generate
-        from test_seasonal import rows
+        from test_similarity import rows
         raw=self.c.data/'raw';raw.mkdir(parents=True)
         _atomic_json(raw/'2025-26.json',rows('2025-26'))
         _atomic_json(raw/'2026-27.json',rows('2026-27'))

@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from nba_player_similarity.snapshot import generate
 from nba_player_similarity.responses import comparison_response
-from test_similarity import cp
+from test_legacy_similarity import cp
 
 
 class SnapshotTests(unittest.TestCase):
@@ -21,7 +21,7 @@ class SnapshotTests(unittest.TestCase):
         self.assertTrue(m['generated_at']);self.assertTrue(m['model_version'])
         release=self.out/'releases'/m['snapshot_id']
         # Archived prototype reproducibility; active API uses season Z-scores.
-        from nba_player_similarity.similarity import SeasonBaseline
+        from nba_player_similarity.legacy_similarity import SeasonBaseline
         checkpoints=json.loads((self.data/'derived/2024-25.json').read_text())
         names={str(p):f'Player {p}' for p in range(1,8)}
         for mode in ('per36','per_game'):

@@ -9,7 +9,7 @@ import re
 from .ingestion import STATS, validate_rows
 from .preparation import game_date, number
 from .season_snapshot import validate_result
-from .seasonal import CURRENT, FEATURES, MODEL_VERSION, load
+from .similarity import CURRENT, FEATURES, MODEL_VERSION, load
 
 
 def sha(path):
@@ -91,7 +91,7 @@ def validate_snapshot(snapshot_root, *, data_dir=None, historical_seasons=None):
     manifest = read(release/'manifest.json')
     players = read(release/'players.json')
     ids = [p['player_id'] for p in players]
-    if (manifest.get('model_version') != MODEL_VERSION or manifest.get('model_code_sha256') != sha(Path(__file__).with_name('seasonal.py'))
+    if (manifest.get('model_version') != MODEL_VERSION or manifest.get('model_code_sha256') != sha(Path(__file__).with_name('similarity.py'))
             or manifest['snapshot_id'] != sid or manifest['schema_version'] != 2 or manifest['season'] != CURRENT or manifest['modes'] != ['per36']
             or not ids or len(set(ids)) != len(ids) or any(not re.fullmatch(r'\d+', p) for p in ids)
             or manifest['player_count'] != len(ids) or manifest['result_count'] != len(ids)):

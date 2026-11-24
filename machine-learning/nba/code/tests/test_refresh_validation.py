@@ -9,7 +9,7 @@ from unittest.mock import patch
 from nba_player_similarity.ingestion import _atomic_json
 from nba_player_similarity.refresh_validation import validate_current, validate_snapshot, read, sha
 from nba_player_similarity.season_snapshot import generate
-from test_seasonal import rows
+from test_similarity import rows
 
 
 def current_rows():

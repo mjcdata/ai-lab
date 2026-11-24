@@ -10,7 +10,7 @@ import shutil
 import tempfile
 import uuid
 from .preparation import FEATURES
-from .similarity import SeasonBaseline
+from .legacy_similarity import SeasonBaseline
 from .responses import comparison_response
 
 MODES = ('per36', 'per_game')
@@ -52,7 +52,7 @@ def generate(data_dir, output_dir, *, producer=comparison_response):
             raise ValueError('Expected numeric player identifiers')
         source_hashes = {'raw': digest(raw_bytes), 'derived': digest(checkpoint_bytes)}
         code_hash = digest(b''.join((Path(__file__).parent/name).read_bytes() for name in
-                                   ('similarity.py', 'preparation.py', 'responses.py')))
+                                   ('legacy_similarity.py', 'preparation.py', 'responses.py')))
         now = datetime.now(timezone.utc).isoformat()
         release_id = uuid.uuid4().hex
         stage = Path(tempfile.mkdtemp(prefix='.staging-', dir=output_dir))

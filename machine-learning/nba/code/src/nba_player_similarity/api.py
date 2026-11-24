@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 from typing import Literal
 from fastapi import FastAPI, HTTPException, Query
-from .seasonal import load, CURRENT
+from .similarity import load, CURRENT
 
 
 def create_app(data_dir=None, *, historical_seasons=None):

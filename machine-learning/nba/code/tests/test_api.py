@@ -3,8 +3,8 @@ import tempfile
 import unittest
 from fastapi.testclient import TestClient
 from nba_player_similarity.api import create_app
-from nba_player_similarity.seasonal import load
-from test_seasonal import fixture
+from nba_player_similarity.similarity import load
+from test_similarity import fixture
 
 
 class APITests(unittest.TestCase):
