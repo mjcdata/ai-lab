@@ -1,29 +1,5 @@
 # NBA Player Similarity — Work Breakdown Structure (WBS)
 
-## Similarity module rename — 2026-11-24
-
-Renamed the active `seasonal.py` module to `similarity.py` and moved the older
-2024–25 checkpoint prototype to `legacy_similarity.py`. Updated API, refresh,
-snapshot, experiment and test imports; active tests now use `test_similarity.py`
-and prototype tests use `test_legacy_similarity.py`. Historical CLI examples
-now invoke `nba_player_similarity.legacy_similarity`; the prototype snapshot
-still hashes the prototype implementation rather than the active model.
-
-Both model files retain their exact original bytes, so calculations, rankings,
-model version and existing snapshot code hashes remain unchanged. Active snapshot
-generation/validation now reads the renamed active filename. No dataset refresh,
-snapshot regeneration, frontend change or deployment is part of this task.
-
-Validation: all 86 offline Python tests passed, covering active API/refresh/
-snapshot behavior and archived checkpoint/scaler/snapshot workflows. Confirmed
-exact byte equality for both renamed model files and validated the existing
-472-player snapshot `04fa92fab5ae4ee681545b57777ef19e` unchanged.
-The existing Starlette/httpx test transport deprecation warning remains. Frontend
-tests/build were not rerun because no frontend code or contract changed.
-Historical entries below retain the filenames used when originally implemented;
-references to the 2024–25 `similarity.py` prototype now mean `legacy_similarity.py`.
-
-
 ## Verified manual current-season refresh — 2026-11-23
 
 The user explicitly requested “Refresh nba data” after approving/merging PR #14.

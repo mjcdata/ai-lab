@@ -9,7 +9,7 @@ from pathlib import Path
 import re
 import uuid
 from .ingestion import _atomic_json
-from .similarity import CURRENT
+from .seasonal import CURRENT
 
 PROJECT = 'prj_1ElLC4mZqX42r6YHyej0vegnrSS6'
 WORKSPACE = 'malcolmjconnors-projects'

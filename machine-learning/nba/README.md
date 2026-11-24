@@ -16,7 +16,7 @@ WORKPLAN.md for the verified release record.
 
 ## Calculation and eligibility
 
-`similarity.py` aggregates each player's regular-season game logs into one player-season, including all teams for traded players. Six-feature per-36 rates use total statistics × 36 / total minutes. Each eligible player-season contributes once to its season's **population** mean and standard deviation (ddof=0). Distances compare the current player's current-season Z-scores against each historical record's own-season Z-scores. A constant feature receives Z=0 and is recorded in the season coverage report.
+`seasonal.py` aggregates each player's regular-season game logs into one player-season, including all teams for traded players. Six-feature per-36 rates use total statistics × 36 / total minutes. Each eligible player-season contributes once to its season's **population** mean and standard deviation (ddof=0). Distances compare the current player's current-season Z-scores against each historical record's own-season Z-scores. A constant feature receives Z=0 and is recorded in the season coverage report.
 
 The five smallest equal-weight Euclidean distances are returned, ordered deterministically by distance, season and player ID. Distinct **player-season records**, including multiple years of the same historical player, are allowed. The selected player's own prior seasons are excluded. No candidate minutes matching is performed. Explanations show all six raw per-36 values, each season's Z-scores and squared-distance contributions, which sum to distance squared.
 
@@ -88,7 +88,7 @@ uv run --offline uvicorn nba_player_similarity.api:app --host 127.0.0.1 --port 8
 
 Snapshots retain the existing versioned-release/atomic-pointer architecture. Schema v2 metadata includes generation time, current season, model/code version, all 81 raw source hashes, per-season eligibility counts, per-file checksums and per-36-only counts. Failed generation preserves the last valid release; a generation lock prevents concurrent activation. Missing source files, nonfinite JSON, parity errors, source changes or checksum failures prevent publication. Old schema-v1 prototype releases are retained for research rollback but rejected by the active frontend. Builds stage only one validated release, then export static HTML/JS/JSON; all generated data stay Git-ignored. No automation is configured.
 
-The former `similarity.py` prototype is now `legacy_similarity.py`. It, along with `preparation.py`, `snapshot.py` and experimental reports, is retained as **archived 2024–25 research/reproducibility tools**. Their checkpoint, scoring and export workflows are not used by the current app; shared numeric/date validation utilities are reused. Use `season_snapshot`, not the old `snapshot` command, for current application refreshes. Never serve a build-in-progress export or publish data without separate approval.
+The old `similarity.py`, `preparation.py`, `snapshot.py` and experimental reports are retained as **archived 2024–25 research/reproducibility tools**. Their checkpoint, scoring and export workflows are not used by the current app; shared numeric/date validation utilities are reused. Use `season_snapshot`, not the old `snapshot` command, for current application refreshes. Never serve a build-in-progress export or publish data without separate approval.
 
 ## Validation
 
@@ -285,8 +285,8 @@ locally to obtain them. No data acquisition or model training is part of DATA-2.
 From this project directory, run against existing derived data:
 
 ```sh
-uv run --offline python -m nba_player_similarity.legacy_similarity 1630162
-uv run --offline python -m nba_player_similarity.legacy_similarity 1630162 --mode per_game
+uv run --offline python -m nba_player_similarity.similarity 1630162
+uv run --offline python -m nba_player_similarity.similarity 1630162 --mode per_game
 ```
 
 Default: six per-36 features (PTS/AST/REB/STL/BLK/TOV), fixed population z-score

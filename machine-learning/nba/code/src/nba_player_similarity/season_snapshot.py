@@ -8,7 +8,7 @@ from pathlib import Path
 import shutil
 import tempfile
 import uuid
-from .similarity import load, CURRENT, MODEL_VERSION, FEATURES
+from .seasonal import load, CURRENT, MODEL_VERSION, FEATURES
 from .snapshot import encoded, digest
 from .ingestion import _atomic_json
 
@@ -48,7 +48,7 @@ def generate(data_dir, output_dir, *, historical_seasons=None, producer=None):
             result=producer(model,pid) if producer else expected
             if result != expected:raise ValueError('API/model parity failure')
             validate_result(result,pid);write(f'results/per36/{pid}.json',result)
-        code_hash=digest((Path(__file__).with_name('similarity.py')).read_bytes())
+        code_hash=digest((Path(__file__).with_name('seasonal.py')).read_bytes())
         manifest=dict(schema_version=2,snapshot_id=release_id,season=CURRENT,
                       generated_at=datetime.now(timezone.utc).isoformat(),model_version=MODEL_VERSION,
                       model_code_sha256=code_hash,source_sha256=hashes,modes=['per36'],

@@ -4,7 +4,7 @@ import copy
 import json
 import math
 from pathlib import Path
-from .legacy_similarity import SeasonBaseline
+from .similarity import SeasonBaseline
 from .preparation import FEATURES
 
 THRESHOLDS = (0, 50, 100, 250, 500)
